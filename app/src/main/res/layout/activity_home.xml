@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F1EFF4"
+    tools:context=".HomeActivity">
+
+    <ImageView
+        android:id="@+id/settingsicon"
+        android:layout_width="74dp"
+        android:layout_height="76dp"
+        android:clickable="true"
+        android:onClick="toSettingsIntent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.997"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ayar" />
+
+    <ImageView
+        android:id="@+id/profileicon"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:clickable="true"
+        android:onClick="toProfileIntent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.154"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.386"
+        app:srcCompat="@drawable/profile2" />
+
+    <ImageView
+        android:id="@+id/exerciseicon"
+        android:layout_width="120dp"
+        android:layout_height="115dp"
+        android:clickable="true"
+        android:onClick="toExercisesIntent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.141"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.729"
+        app:srcCompat="@drawable/puzzle" />
+
+    <TextView
+        android:id="@+id/profiletxt"
+        android:layout_width="125dp"
+        android:layout_height="60dp"
+        android:clickable="true"
+        android:fontFamily="@font/opensans_semibold"
+        android:gravity="center"
+        android:onClick="toProfileIntent"
+        android:text="Profilim"
+        android:textAlignment="center"
+        android:textColor="#5005B3"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.154"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.497" />
+
+    <TextView
+        android:id="@+id/exercisetxt"
+        android:layout_width="125dp"
+        android:layout_height="65dp"
+        android:clickable="true"
+        android:fontFamily="@font/opensans_semibold"
+        android:onClick="toExercisesIntent"
+        android:text="Mini  Oyunlar"
+        android:textAlignment="center"
+        android:textColor="#5005B3"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.143"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.835" />
+
+    <ImageView
+        android:id="@+id/memoboxicon"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:clickable="true"
+        android:onClick="toMemoboxIntent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.86"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.729"
+        app:srcCompat="@drawable/box" />
+
+    <TextView
+        android:id="@+id/memoriestxt"
+        android:layout_width="125dp"
+        android:layout_height="60dp"
+        android:clickable="true"
+        android:fontFamily="@font/opensans_semibold"
+        android:gravity="center"
+        android:onClick="toMemoriesIntent"
+        android:text="Anılarım"
+        android:textAlignment="center"
+        android:textColor="#5005B3"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.859"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499" />
+
+    <TextView
+        android:id="@+id/memoboxtxt"
+        android:layout_width="125dp"
+        android:layout_height="65dp"
+        android:clickable="true"
+        android:fontFamily="@font/opensans_semibold"
+        android:onClick="toMemoboxIntent"
+        android:text="Hafıza Kutusu"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="#5005B3"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.859"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.835" />
+
+    <ImageView
+        android:id="@+id/memoriesicon"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:clickable="true"
+        android:onClick="toMemoriesIntent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.86"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.386"
+        app:srcCompat="@drawable/album" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="389dp"
+        android:layout_height="136dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.091"
+        app:srcCompat="@drawable/logoyatay2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

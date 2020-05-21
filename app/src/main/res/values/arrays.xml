@@ -1,0 +1,15 @@
+<resources>
+    <!-- Font Preference -->
+    <string-array name="fonts_entries">
+        <item>Normal</item>
+        <item>Büyük</item>
+        <item>En büyük</item>
+    </string-array>
+
+    <string-array name="fonts_values">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+    </string-array>
+
+</resources>

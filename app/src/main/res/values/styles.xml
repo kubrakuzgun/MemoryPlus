@@ -1,0 +1,95 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/opensans</item>
+        <item name="android:textAppearance">@style/CustomTextAppearence</item>
+        <item name="android:actionBarTabTextStyle">@style/CustomTextAppearence</item>
+        <item name="android:alertDialogTheme">@style/CustomAlertDialog</item>
+
+    </style>
+
+
+    <style name="FullscreenTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+        <item name="android:fontFamily">@font/opensans</item>
+        <item name="android:textAppearance">@style/CustomTextAppearence</item>
+        <item name="android:alertDialogTheme">@style/CustomAlertDialog</item>
+
+    </style>
+
+    <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:textAppearance">@style/CustomTextAppearence</item>
+        <item name="android:alertDialogTheme">@style/CustomAlertDialog</item>
+
+
+    </style>
+
+    <style name="MyPreferenceScreen" parent="Theme.AppCompat">
+        <item name="android:textColor">#1B1A1A</item>
+        <item name="android:textColorPrimary">#673AB7</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:background">#ffffff</item>
+        <item name="android:textAppearance">@style/CustomTextAppearence</item>
+        <item name="android:alertDialogTheme">@style/CustomAlertDialog</item>
+
+    </style>
+
+    <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:textAppearance">@style/CustomAlertTextAppearence</item>
+        <item name="android:editTextStyle">@style/CustomAlertInputAppearence</item>
+        <item name="android:textViewStyle">@style/CustomAlertTitleAppearence</item>
+        <item name="android:titleTextStyle">@style/CustomAlertTextAppearence</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+    </style>
+
+    <style name="CustomTextAppearence" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/opensans</item>
+    </style>
+
+    <style name="CustomAlertTextAppearence" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/opensans</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="CustomAlertTitleAppearence" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/opensans_semibold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#5303C6</item>
+
+    </style>
+
+    <style name="CustomAlertInputAppearence" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/opensans_semibold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingLeft">10dp</item>
+    </style>
+
+
+
+</resources>

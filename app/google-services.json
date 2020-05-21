@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "994277141072",
+    "firebase_url": "https://memoryplus-7faba.firebaseio.com",
+    "project_id": "memoryplus-7faba",
+    "storage_bucket": "memoryplus-7faba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994277141072:android:c20529b7d552b993f4ff55",
+        "android_client_info": {
+          "package_name": "com.group4.memoryv10"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "994277141072-l0032he29ak0tua0h1jmu26tkpdal9j1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxJI6oqlMEVpWkwBcAPoD57suddml7oyw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "994277141072-l0032he29ak0tua0h1jmu26tkpdal9j1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,30 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Tercihler">
+
+        <SwitchPreferenceCompat
+            app:key="notifications"
+            app:title="Bildirimleri aç"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Hesap Ayarları">
+
+        <Preference app:title="Hesap şifresini değiştir"
+            app:key="changeuserpassword">
+
+        </Preference>
+
+        <Preference app:title="Yönetici şifresini değiştir"
+            app:key="changeadminpin">
+
+        </Preference>
+
+        <Preference app:title="Oturumu Kapat"
+            app:key="logout">
+
+        </Preference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
