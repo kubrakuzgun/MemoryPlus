@@ -1,5 +1,6 @@
 package com.group4.memoryv10;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.Animator;
@@ -11,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -25,6 +27,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -32,8 +44,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class MatchingGame extends AppCompatActivity {
+public class MatchingGame_NoAudio extends AppCompatActivity {
 
     ImageView image1;
     ImageView image2;
@@ -47,10 +60,8 @@ public class MatchingGame extends AppCompatActivity {
     ImageView image10;
     ImageView image11;
     ImageView image12;
-    ImageView next;
     TextView score;
     TextView time;
-    TextView nexttxt;
     Integer[] array;
     List<Integer> list;
     Chronometer chronometer;
@@ -63,6 +74,12 @@ public class MatchingGame extends AppCompatActivity {
     int truecount, falsecount;
     String elapsedtime;
     MediaPlayer myMediaPlayer = null;
+
+    DatabaseReference databaseReference;
+    FirebaseUser user;
+    private FirebaseAuth mAuth;
+    StorageReference storageRef;
+
 
     protected void Animate(ImageView view){
         final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
@@ -158,25 +175,13 @@ public class MatchingGame extends AppCompatActivity {
             chronometer.stop();
             elapsedtime = time.getText().toString();
 
-            //save reaction time to file
-            if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
-                Toast.makeText(MatchingGame.this,"Depolama alanına erişilemiyor.",Toast.LENGTH_LONG).show();
-            }
-
             String filepath = "/sdcard/MatchingGameResults";
 
             File file = new File(filepath, "mgresult.txt");
 
-            if (!file.exists()) {
-                try {
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
             try {
                 BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
-                buf.append("Sesli eşleştirme:");
+                buf.append("Sessiz eşleştirme:");
                 buf.newLine();
                 buf.newLine();
                 buf.append("Doğru Deneme Sayısı:  ").append(String.valueOf(truecount));
@@ -192,12 +197,48 @@ public class MatchingGame extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+            mAuth = FirebaseAuth.getInstance();
+            user = mAuth.getCurrentUser();
+            storageRef = FirebaseStorage.getInstance().getReference();
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(MatchingGame.this);
+            final String timeStamp = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+            final StorageReference fileRef = storageRef.child("Users/" + user.getUid() + "/Game Results/Matching/" + timeStamp + ".txt");
+            Uri fileuri = Uri.fromFile(file);
 
-            builder.setTitle("Harika!");
+            fileRef.putFile(fileuri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String fileurl = uri.toString();
 
-            builder.setMessage("Tüm resimleri eşleştirdiniz. Sıra sessiz eşleştirmede.");
+                                }
+                            });
+                            // Get a URL to the uploaded content
+                            // Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                            saveFileUrlToDatabase(timeStamp);
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            // ...
+                        }
+                    });
+
+
+            file.delete();
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(MatchingGame_NoAudio.this);
+
+            builder.setTitle("Tebrikler!");
+
+            builder.setMessage("Tüm resimleri eşleştirdiniz.");
 
             final AlertDialog diag = builder.create();
 
@@ -213,12 +254,11 @@ public class MatchingGame extends AppCompatActivity {
                 @Override
                 public void onFinish() {
                     diag.dismiss();
+                    Intent gamesint = new Intent(MatchingGame_NoAudio.this, GamesActivity.class);
+                    startActivity(gamesint);
                 }
             }.start();
 
-            next.setImageResource(R.drawable.sonraki);
-            nexttxt.setTextColor(getResources().getColor(R.color.colorPrimary));
-            next.setClickable(true);
 
         }
     }
@@ -240,9 +280,6 @@ public class MatchingGame extends AppCompatActivity {
             });
             oa1.start();
 
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.araba);
-            myMediaPlayer.start();
-
         }
         else if(array[tag]==2){
             final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
@@ -259,8 +296,7 @@ public class MatchingGame extends AppCompatActivity {
                 }
             });
             oa1.start();
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.gozluk);
-            myMediaPlayer.start();
+
         }
         else if(array[tag]==3){
             final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
@@ -277,8 +313,7 @@ public class MatchingGame extends AppCompatActivity {
                 }
             });
             oa1.start();
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.telefon);
-            myMediaPlayer.start();
+
         }
         else if(array[tag]==4){
             final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
@@ -295,8 +330,7 @@ public class MatchingGame extends AppCompatActivity {
                 }
             });
             oa1.start();
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.ordek);
-            myMediaPlayer.start();
+
         }
         else if(array[tag]==5){
             final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
@@ -313,8 +347,7 @@ public class MatchingGame extends AppCompatActivity {
                 }
             });
             oa1.start();
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.gemi);
-            myMediaPlayer.start();
+
         }
         else if(array[tag]==6){
             final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
@@ -331,8 +364,7 @@ public class MatchingGame extends AppCompatActivity {
                 }
             });
             oa1.start();
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.kalem);
-            myMediaPlayer.start();
+
         }
         if(number==1)
         {
@@ -395,7 +427,7 @@ public class MatchingGame extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_matching_game);
+        setContentView(R.layout.activity_matching_game_no_audio);
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
 
@@ -414,9 +446,6 @@ public class MatchingGame extends AppCompatActivity {
         image10= findViewById(R.id.image10);
         image11= findViewById(R.id.image11);
         image12= findViewById(R.id.image12);
-        next = findViewById(R.id.next);
-        next.setClickable(false);
-        nexttxt = findViewById(R.id.nexttxt);
         score = findViewById(R.id.Score);
         time = findViewById(R.id.Time);
         array = new Integer[]{1,2,3,4,5,6,1,2,3,4,5,6};
@@ -509,30 +538,13 @@ public class MatchingGame extends AppCompatActivity {
             }
         });
 
-
-    }
-
-    public void onNextClick(View v){
-        Intent nextint = new Intent(MatchingGame.this, MatchingGame_NoAudio.class);
-        startActivity(nextint);
-
     }
 
 
-    private static boolean isExternalStorageReadOnly() {
-        String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
-            return true;
-        }
-        return false;
-    }
+    public void saveFileUrlToDatabase(String fileurl) {
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("GameResults").child("Matching").child(user.getUid()).child(fileurl).setValue(fileurl);
 
-    private static boolean isExternalStorageAvailable() {
-        String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
-            return true;
-        }
-        return false;
     }
 
 }
