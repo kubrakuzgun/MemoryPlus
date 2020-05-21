@@ -47,10 +47,8 @@ public class MatchingGame extends AppCompatActivity {
     ImageView image10;
     ImageView image11;
     ImageView image12;
-    ImageView next;
     TextView score;
     TextView time;
-    TextView nexttxt;
     Integer[] array;
     List<Integer> list;
     Chronometer chronometer;
@@ -86,7 +84,7 @@ public class MatchingGame extends AppCompatActivity {
         {
             truecount++;
             Score+=1;
-            score.setText("Score: " + Score);
+            score.setText("Skor: " + Score);
             if(FirstView==0||SecondView==0)
                 image1.setVisibility(View.INVISIBLE);
             if(FirstView==1||SecondView==1)
@@ -163,9 +161,8 @@ public class MatchingGame extends AppCompatActivity {
                 Toast.makeText(MatchingGame.this,"Depolama alanına erişilemiyor.",Toast.LENGTH_LONG).show();
             }
 
-            String filepath = "/sdcard/MatchingGameResults";
 
-            File file = new File(filepath, "mgresult.txt");
+            File file = new File(getExternalFilesDir(null), "mgresult.txt");
 
             if (!file.exists()) {
                 try {
@@ -190,35 +187,37 @@ public class MatchingGame extends AppCompatActivity {
                 buf.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MatchingGame.this);
+
+                builder.setTitle("Harika!");
+
+                builder.setMessage("Tüm resimleri eşleştirdiniz. Sıra sessiz eşleştirmede.");
+
+                final AlertDialog diag = builder.create();
+
+                diag.show();
+
+                new CountDownTimer(5000, 1000) {
+
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        diag.dismiss();
+                        Intent nextint = new Intent(MatchingGame.this, MatchingGame_NoAudio.class);
+                        startActivity(nextint);
+                    }
+                }.start();
+
+
             }
 
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(MatchingGame.this);
-
-            builder.setTitle("Harika!");
-
-            builder.setMessage("Tüm resimleri eşleştirdiniz. Sıra sessiz eşleştirmede.");
-
-            final AlertDialog diag = builder.create();
-
-            diag.show();
-
-            new CountDownTimer(5000, 1000) {
-
-                @Override
-                public void onTick(long millisUntilFinished) {
-
-                }
-
-                @Override
-                public void onFinish() {
-                    diag.dismiss();
-                }
-            }.start();
-
-            next.setImageResource(R.drawable.sonraki);
-            nexttxt.setTextColor(getResources().getColor(R.color.colorPrimary));
-            next.setClickable(true);
 
         }
     }
@@ -399,7 +398,7 @@ public class MatchingGame extends AppCompatActivity {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
 
-        chronometer = (Chronometer)findViewById(R.id.Time);
+        chronometer = findViewById(R.id.Time);
         chronometer.start();
 
         image1= findViewById(R.id.image1);
@@ -414,9 +413,6 @@ public class MatchingGame extends AppCompatActivity {
         image10= findViewById(R.id.image10);
         image11= findViewById(R.id.image11);
         image12= findViewById(R.id.image12);
-        next = findViewById(R.id.next);
-        next.setClickable(false);
-        nexttxt = findViewById(R.id.nexttxt);
         score = findViewById(R.id.Score);
         time = findViewById(R.id.Time);
         array = new Integer[]{1,2,3,4,5,6,1,2,3,4,5,6};
@@ -512,11 +508,6 @@ public class MatchingGame extends AppCompatActivity {
 
     }
 
-    public void onNextClick(View v){
-        Intent nextint = new Intent(MatchingGame.this, MatchingGame_NoAudio.class);
-        startActivity(nextint);
-
-    }
 
 
     private static boolean isExternalStorageReadOnly() {

@@ -627,14 +627,6 @@ public class MB_TestActivity_Part1 extends AppCompatActivity {
 
         reactionTime = DateUtils.formatElapsedTime(elapsedSeconds);
 
-/*
-        answers.add(target1.getText().toString());
-        answers.add(target2.getText().toString());
-        answers.add(target3.getText().toString());
-        answers.add(target4.getText().toString());
-*/
-
-
         for(int i=0; i<8; i++){
             if(answers.get(i).equals(answerkey.get(i))){
                 ansflags.add(i,"doğru");
@@ -657,9 +649,8 @@ public class MB_TestActivity_Part1 extends AppCompatActivity {
         }
 
 
-        String filepath = "/sdcard/MemoryPlusResults";
 
-        File file = new File(filepath, "mbresult.txt");
+        File file = new File(getExternalFilesDir(null), "mbresult.txt");
 
         if (!file.exists()) {
             try {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.group4.memoryv10">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -15,8 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        android:windowSoftInputMode="adjustPan">
-        <activity android:name=".MatchingGame_NoAudio"></activity>
+        android:windowSoftInputMode="adjustPan"
+        tools:targetApi="m">
+        <activity
+            android:name=".MatchingGame_NoAudio"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".MatchingGame"
             android:theme="@style/AppTheme.NoActionBar" />

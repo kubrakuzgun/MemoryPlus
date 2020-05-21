@@ -286,9 +286,8 @@ public class MB_TestActivity_Part2 extends AppCompatActivity {
         long averagereacttime = totalreacttime / reactionTimes.size();
         String avg_reaction = DateUtils.formatElapsedTime(averagereacttime);
 
-        String filepath = "/sdcard/MemoryPlusResults";
 
-        File file = new File(filepath, "mbresult.txt");
+        File file = new File(getExternalFilesDir(null), "mbresult.txt");
 
         try {
             BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));

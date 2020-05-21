@@ -103,7 +103,7 @@ public class MatchingGame_NoAudio extends AppCompatActivity {
         {
             truecount++;
             Score+=1;
-            score.setText("Score: " + Score);
+            score.setText("Skor: " + Score);
             if(FirstView==0||SecondView==0)
                 image1.setVisibility(View.INVISIBLE);
             if(FirstView==1||SecondView==1)
@@ -175,9 +175,9 @@ public class MatchingGame_NoAudio extends AppCompatActivity {
             chronometer.stop();
             elapsedtime = time.getText().toString();
 
-            String filepath = "/sdcard/MatchingGameResults";
+//            String filepath = "/sdcard/MemoryPlusResults";
 
-            File file = new File(filepath, "mgresult.txt");
+            File file = new File(getExternalFilesDir(null), "mgresult.txt");
 
             try {
                 BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
@@ -196,42 +196,43 @@ public class MatchingGame_NoAudio extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            finally {
+                mAuth = FirebaseAuth.getInstance();
+                user = mAuth.getCurrentUser();
+                storageRef = FirebaseStorage.getInstance().getReference();
 
-            mAuth = FirebaseAuth.getInstance();
-            user = mAuth.getCurrentUser();
-            storageRef = FirebaseStorage.getInstance().getReference();
+                final String timeStamp = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                final StorageReference fileRef = storageRef.child("Users/" + user.getUid() + "/Game Results/Matching/" + timeStamp + ".txt");
+                Uri fileuri = Uri.fromFile(file);
 
-            final String timeStamp = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
-            final StorageReference fileRef = storageRef.child("Users/" + user.getUid() + "/Game Results/Matching/" + timeStamp + ".txt");
-            Uri fileuri = Uri.fromFile(file);
+                fileRef.putFile(fileuri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String fileurl = uri.toString();
 
-            fileRef.putFile(fileuri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    String fileurl = uri.toString();
+                                    }
+                                });
+                                // Get a URL to the uploaded content
+                                // Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                saveFileUrlToDatabase(timeStamp);
 
-                                }
-                            });
-                            // Get a URL to the uploaded content
-                            // Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                            saveFileUrlToDatabase(timeStamp);
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle unsuccessful uploads
+                                // ...
+                            }
+                        });
 
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle unsuccessful uploads
-                            // ...
-                        }
-                    });
+                file.delete();
 
-
-            file.delete();
+            }
 
 
             AlertDialog.Builder builder = new AlertDialog.Builder(MatchingGame_NoAudio.this);
@@ -244,7 +245,7 @@ public class MatchingGame_NoAudio extends AppCompatActivity {
 
             diag.show();
 
-            new CountDownTimer(5000, 1000) {
+            new CountDownTimer(3000, 1000) {
 
                 @Override
                 public void onTick(long millisUntilFinished) {
@@ -428,10 +429,8 @@ public class MatchingGame_NoAudio extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matching_game_no_audio);
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
 
-        chronometer = (Chronometer)findViewById(R.id.Time);
+        chronometer = findViewById(R.id.Time);
         chronometer.start();
 
         image1= findViewById(R.id.image1);
