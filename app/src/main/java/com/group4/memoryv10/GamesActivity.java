@@ -35,4 +35,13 @@ public class GamesActivity extends AppCompatActivity {
         startActivity(mgint);
     }
 
+    public void toPreviousImageGame(View v){
+        Intent piint = new Intent(GamesActivity.this, PreviousImageGame.class);
+        startActivity(piint);
+    }
+    public void toRepeatedImagesGame(View v){
+        Intent riint = new Intent(GamesActivity.this, RepeatedImagesGame.class);
+        startActivity(riint);
+    }
+
 }

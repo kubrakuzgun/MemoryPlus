@@ -3,7 +3,6 @@ package com.group4.memoryv10;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,23 +38,19 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         mAuth = FirebaseAuth.getInstance();
-
         user = mAuth.getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
         memoriesRef = databaseReference.child("Memories").child(user.getUid());
-
+        //get memories from firebase database
         memoriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot datas: dataSnapshot.getChildren()) {
-
+                    //number of memories
                     memoryCount++;
-
                 }
-
             }
-
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -64,8 +58,8 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        //access to users database
         userRef = databaseReference.child("Users");
-
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             String caretaker_pin;
             @Override
@@ -76,56 +70,52 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     }
                 }
+                //save caretaker pin to a global variable for further use
                 setCaretakerPin(caretaker_pin);
             }
-
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "Failed to read value.", databaseError.toException());
             }
-
-
-
         });
 
+        //check permission to external storage access
         String state = Environment.getExternalStorageState();
-
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (checkPermission()) {
                     Log.e(" ", "Permission Granted.");
-
                 } else {
+                    //request user to access external storage of his/her device
                     requestPermission(); // Code for permission
                 }
             } else {
                 Log.e(" ", "Error.");
-
             }
         }
-
     }
 
-
+    //close app when back pressed
     @Override
     public void onBackPressed(){
         finishAffinity();
     }
 
+    //redirect to profile activity
     public void toProfileIntent(View v){
         Intent profileint = new Intent(HomeActivity.this, ProfileActivity.class);
         startActivity(profileint);
     }
 
+    //redirect to settings activity
     public void toSettingsIntent(View v){
-
+        //create alert to get admin (caretaker) pin
         AlertDialog.Builder alert = new AlertDialog.Builder(HomeActivity.this);
-
         alert.setTitle("Dikkat");
         alert.setMessage("Yönetici şifresini giriniz!");
 
-// Set an EditText view to get user input
+        //create EditText view to get user input
         final EditText input = new EditText(HomeActivity.this);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         alert.setView(input);
@@ -133,10 +123,10 @@ public class HomeActivity extends AppCompatActivity {
         alert.setPositiveButton("Devam", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String value = input.getText().toString();
+                //if input is equal to admin pin, redirect to Edit Memories Activity
                 if(value.equals(ctPin)){
                     Intent settingsint = new Intent(HomeActivity.this, SettingsActivity.class);
                     startActivity(settingsint);
-
                 }
                 else{
                     Toast.makeText(HomeActivity.this,"Hatalı şifre.",Toast.LENGTH_SHORT).show();
@@ -144,28 +134,21 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         });
-
         alert.setNegativeButton("İptal", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 dialog.cancel();
             }
         });
-
         alert.show();
-
-
     }
 
+    //redirect to memories activity
     public void toMemoriesIntent(View v){
         Intent memoriesint = new Intent(HomeActivity.this, MemoriesActivity.class);
         startActivity(memoriesint);
     }
 
-    public void toExercisesIntent(View v){
-        Intent execisesint = new Intent(HomeActivity.this, GamesActivity.class);
-        startActivity(execisesint);
-    }
-
+    //redirect to memory box test activity
     public void toMemoboxIntent(View v){
         if(memoryCount>=5){
             Intent testsint = new Intent(HomeActivity.this, MemoryBoxActivity.class);
@@ -177,11 +160,13 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    public void setCaretakerPin(String pin){
-        ctPin = pin;
+    //redirect to games activity
+    public void toExercisesIntent(View v){
+        Intent gamesint = new Intent(HomeActivity.this, GamesActivity.class);
+        startActivity(gamesint);
     }
 
-
+    //check external storage permission
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (result == PackageManager.PERMISSION_GRANTED) {
@@ -191,6 +176,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    //request external storage permission
     private void requestPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(HomeActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             Toast.makeText(HomeActivity.this, "Sonuçlarınızın kaydedilebilmesi için cihazınızın depolama alanına erişim izni sağlamanız gerekmektedir.", Toast.LENGTH_LONG).show();
@@ -199,6 +185,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    //on external storage permission request result
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -212,5 +199,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-
+    public void setCaretakerPin(String pin){
+        ctPin = pin;
+    }
 }

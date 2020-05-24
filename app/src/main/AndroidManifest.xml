@@ -19,8 +19,14 @@
         android:windowSoftInputMode="adjustPan"
         tools:targetApi="m">
         <activity
-            android:name=".MatchingGame_NoAudio"
+            android:name=".RepeatedImagesGame"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".PreviousImageGame"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".MatchingGame_NoAudio"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MatchingGame"
             android:theme="@style/AppTheme.NoActionBar" />

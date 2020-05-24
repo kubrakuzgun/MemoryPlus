@@ -2,7 +2,6 @@ package com.group4.memoryv10;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ClipData;
@@ -22,7 +21,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -33,23 +31,17 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-
-import org.w3c.dom.Text;
-
 
 public class MB_TestActivity_Part1 extends AppCompatActivity {
     FirebaseDatabase db;
@@ -69,14 +61,14 @@ public class MB_TestActivity_Part1 extends AppCompatActivity {
     String reactionTime;
 
     ArrayList<ImageView> imgs;
-    ArrayList<TextView> opts;
+    ArrayList<TextView> opts, allopts;
+    ArrayList<TextView> targets;
     ArrayList<String> answers, answerkey, ansflags;
     Query mQuery;
     int memocount, remainingmemos, clickcount, truecount, falsecount, passcount;
     ImageView img1, img2, img3, img4;
     TextView opt1, opt2, opt3, opt4;
     TextView target1, target2, target3, target4;
-    String ans1, ans2, ans3, ans4, ans5, ans6, ans7, ans8;
     String correctans1, correctans2, correctans3, correctans4, correctans5, correctans6, correctans7, correctans8;
 
 
@@ -97,6 +89,8 @@ public class MB_TestActivity_Part1 extends AppCompatActivity {
         memories = new ArrayList<>();
         imgs = new ArrayList<>();
         opts = new ArrayList<>();
+        allopts = new ArrayList<>();
+        targets = new ArrayList<>();
         answers = new ArrayList<>();
         answerkey = new ArrayList<>();
         ansflags = new ArrayList<>();
@@ -105,25 +99,34 @@ public class MB_TestActivity_Part1 extends AppCompatActivity {
         target2 = findViewById(R.id.target2);
         target3 = findViewById(R.id.target3);
         target4 = findViewById(R.id.target4);
+        targets.add(target1);
+        targets.add(target2);
+        targets.add(target3);
+        targets.add(target4);
 
         img1 = findViewById(R.id.img1);
         img2 = findViewById(R.id.img2);
         img3 = findViewById(R.id.img3);
         img4 = findViewById(R.id.img4);
+        imgs.add(img1);
+        imgs.add(img2);
+        imgs.add(img3);
+        imgs.add(img4);
 
         opt1 = findViewById(R.id.opt1);
         opt2 = findViewById(R.id.opt2);
         opt3 = findViewById(R.id.opt3);
         opt4 = findViewById(R.id.opt4);
-
-        imgs.add(img1);
-        imgs.add(img2);
-        imgs.add(img3);
-        imgs.add(img4);
+        //add options to change
         opts.add(opt1);
         opts.add(opt2);
         opts.add(opt3);
 
+        //add all options including pass to set onclick
+        allopts.add(opt1);
+        allopts.add(opt2);
+        allopts.add(opt3);
+        allopts.add(opt4);
 
         Collections.shuffle(imgs);
         Collections.shuffle(opts);
@@ -134,16 +137,14 @@ public class MB_TestActivity_Part1 extends AppCompatActivity {
         target4.setText("");
 
         mAuth = FirebaseAuth.getInstance();
-
         user = mAuth.getCurrentUser();
         Log.d(user.getUid(), "userid");
         db = FirebaseDatabase.getInstance();
         databaseReference = db.getReference();
-
         memoriesRef = databaseReference.child("Memories").child(user.getUid());
 
+        //order memories by date
         mQuery = memoriesRef.orderByChild("date");
-
         mQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -172,7 +173,6 @@ public class MB_TestActivity_Part1 extends AppCompatActivity {
                 answerkey.add(correctans4);
 
                 storageRef= FirebaseStorage.getInstance().getReference();
-
 
                 storageRef.child("Users/" + memorieslist.get(0).getUserid() + "/Memories/" + memorieslist.get(0).getMemoURL()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
@@ -239,271 +239,83 @@ public class MB_TestActivity_Part1 extends AppCompatActivity {
             }
         });
 
-
-        TextView.OnTouchListener myOnTouchListener_o1 = new View.OnTouchListener(){
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ClipData data = ClipData.newPlainText("", opt1.getText());
-                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-                v.startDrag(data, shadowBuilder, v, 0);
-                v.setVisibility(View.VISIBLE);
-                return false;
-            }
-        };
-
-        TextView.OnTouchListener myOnTouchListener_o2 = new View.OnTouchListener(){
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ClipData data = ClipData.newPlainText("", opt2.getText());
-                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-                v.startDrag(data, shadowBuilder, v, 0);
-                v.setVisibility(View.VISIBLE);
-                return false;
-            }
-        };
-
-        TextView.OnTouchListener myOnTouchListener_o3 = new View.OnTouchListener(){
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ClipData data = ClipData.newPlainText("", opt3.getText());
-                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-                v.startDrag(data, shadowBuilder, v, 0);
-                v.setVisibility(View.VISIBLE);
-                return false;
-            }
-        };
-
-        TextView.OnTouchListener myOnTouchListener_o4 = new View.OnTouchListener(){
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ClipData data = ClipData.newPlainText("", opt4.getText());
-                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-                v.startDrag(data, shadowBuilder, v, 0);
-                v.setVisibility(View.VISIBLE);
-
-                return false;
-            }
-        };
-
-
-        opt1.setOnTouchListener(myOnTouchListener_o1);
-        opt2.setOnTouchListener(myOnTouchListener_o2);
-        opt3.setOnTouchListener(myOnTouchListener_o3);
-        opt4.setOnTouchListener(myOnTouchListener_o4);
-
-
+        //create light purple color
         final int lightpurple = Color.parseColor("#9985B6");
 
-
-        TextView.OnDragListener myOnDragListener_t1 = new View.OnDragListener() {
-
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-
-                switch (event.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        break;
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        v.getBackground().setColorFilter(lightpurple, PorterDuff.Mode.SRC_IN);
-
-                        // Invalidate the view to force a redraw in the new tint
-                        v.invalidate();
-                        break;
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        v.getBackground().clearColorFilter();
-                        // Invalidate the view to force a redraw in the new tint
-                        v.invalidate();
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        ClipData.Item item = event.getClipData().getItemAt(0);
-                        String dragData = item.getText().toString();
-                        v.getBackground().clearColorFilter();
-                        if(target1.length()>1){
-                            v.invalidate();
-                        }
-                        else {
-                            target1.setText(dragData);
-                            View view = (View) event.getLocalState();
-                            view.setVisibility(View.INVISIBLE);
-                        }                        break;
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        v.getBackground().clearColorFilter();
-
-                    default:
-                        break;
+        for(int i=0; i<4; i++){
+            final int finalI = i;
+            TextView.OnTouchListener myOnTouchListener = new View.OnTouchListener(){
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    ClipData data = ClipData.newPlainText("", allopts.get(finalI).getText());
+                    View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+                    v.startDrag(data, shadowBuilder, v, 0);
+                    v.setVisibility(View.VISIBLE);
+                    return false;
                 }
-                return true;
-            }
+            };
+            allopts.get(finalI).setOnTouchListener(myOnTouchListener);
 
-        };
+            TextView.OnDragListener myOnDragListener = new View.OnDragListener() {
 
+                @Override
+                public boolean onDrag(View v, DragEvent event) {
 
-        TextView.OnDragListener myOnDragListener_t2 = new View.OnDragListener() {
+                    switch (event.getAction()) {
+                        case DragEvent.ACTION_DRAG_STARTED:
+                            break;
+                        case DragEvent.ACTION_DRAG_ENTERED:
+                            v.getBackground().setColorFilter(lightpurple, PorterDuff.Mode.SRC_IN);
 
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-
-                switch (event.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        break;
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        v.getBackground().setColorFilter(lightpurple, PorterDuff.Mode.SRC_IN);
-
-                        // Invalidate the view to force a redraw in the new tint
-                        v.invalidate();
-                        break;
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        v.getBackground().clearColorFilter();
-                        // Invalidate the view to force a redraw in the new tint
-                        v.invalidate();
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        ClipData.Item item = event.getClipData().getItemAt(0);
-                        String dragData = item.getText().toString();
-                        v.getBackground().clearColorFilter();
-                        if(target2.length()>1){
+                            // Invalidate the view to force a redraw in the new tint
                             v.invalidate();
-                        }
-                        else {
-                            target2.setText(dragData);
-                            View view = (View) event.getLocalState();
-                            view.setVisibility(View.INVISIBLE);
-                        }                        break;
-
-                    case DragEvent.ACTION_DRAG_LOCATION:
-
-                        // Ignore the event
-                        return true;
-
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        v.getBackground().clearColorFilter();
-
-                    default:
-                        break;
-                }
-                return true;
-            }
-
-        };
-
-        TextView.OnDragListener myOnDragListener_t3 = new View.OnDragListener() {
-
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-
-                switch (event.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        break;
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        v.getBackground().setColorFilter(lightpurple, PorterDuff.Mode.SRC_IN);
-
-                        // Invalidate the view to force a redraw in the new tint
-                        v.invalidate();
-                        break;
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        v.getBackground().clearColorFilter();
-                        // Invalidate the view to force a redraw in the new tint
-                        v.invalidate();
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        ClipData.Item item = event.getClipData().getItemAt(0);
-                        String dragData = item.getText().toString();
-                        v.getBackground().clearColorFilter();
-                        if(target3.length()>1){
+                            break;
+                        case DragEvent.ACTION_DRAG_EXITED:
+                            v.getBackground().clearColorFilter();
+                            // Invalidate the view to force a redraw in the new tint
                             v.invalidate();
-                        }
-                        else {
-                            target3.setText(dragData);
-                            View view = (View) event.getLocalState();
-                            view.setVisibility(View.INVISIBLE);
-                        }
-                        break;
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        v.getBackground().clearColorFilter();
+                            break;
+                        case DragEvent.ACTION_DROP:
+                            ClipData.Item item = event.getClipData().getItemAt(0);
+                            String dragData = item.getText().toString();
+                            v.getBackground().clearColorFilter();
+                            if(targets.get(finalI).length()>1){
+                                v.invalidate();
+                            }
+                            else {
+                                targets.get(finalI).setText(dragData);
+                                View view = (View) event.getLocalState();
+                                view.setVisibility(View.INVISIBLE);
+                            }
+                            break;
+                        case DragEvent.ACTION_DRAG_ENDED:
+                            v.getBackground().clearColorFilter();
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
+                    return true;
                 }
-                return true;
-            }
-
-        };
-
-        TextView.OnDragListener myOnDragListener_t4 = new View.OnDragListener() {
-
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-
-                switch (event.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        break;
-                    case DragEvent.ACTION_DRAG_ENTERED:
-
-                        v.getBackground().setColorFilter(lightpurple, PorterDuff.Mode.SRC_IN);
-
-                        // Invalidate the view to force a redraw in the new tint
-                        v.invalidate();
-                        break;
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        v.getBackground().clearColorFilter();
-                        // Invalidate the view to force a redraw in the new tint
-                        v.invalidate();
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        ClipData.Item item = event.getClipData().getItemAt(0);
-                        String dragData = item.getText().toString();
-                        v.getBackground().clearColorFilter();
-                        if(target4.length()>1){
-                            v.invalidate();
-                        }
-                        else {
-                            target4.setText(dragData);
-                            View view = (View) event.getLocalState();
-                            view.setVisibility(View.INVISIBLE);
-                        }
-
-                        break;
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        v.getBackground().clearColorFilter();
-
-
-
-                    default:
-                        break;
-                }
-                return true;
-            }
-
-        };
-
-
-        target1.setOnDragListener(myOnDragListener_t1);
-        target2.setOnDragListener(myOnDragListener_t2);
-        target3.setOnDragListener(myOnDragListener_t3);
-        target4.setOnDragListener(myOnDragListener_t4);
+            };
+            targets.get(finalI).setOnDragListener(myOnDragListener);
+        }
 
         startTime = SystemClock.elapsedRealtime();
-
-
-
     }
-
 
     @Override
     public void onBackPressed() {
         AlertDialog.Builder alert = new AlertDialog.Builder(MB_TestActivity_Part1.this);
-
-        alert.setMessage("Testi iptal etmek istiyor musunuz?");
-
-
+        alert.setTitle("Testi iptal etmek istiyor musunuz?");
+        alert.setMessage("İlerlemeniz kaydedilmeyecek.");
         alert.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                    Intent cancelint = new Intent(MB_TestActivity_Part1.this, HomeActivity.class);
-                    startActivity(cancelint);
+                File file = new File(getExternalFilesDir(null), "mbresult.txt");
+                if (file.exists()){
+                    file.delete();
+                }
+                Intent cancelint = new Intent(MB_TestActivity_Part1.this, HomeActivity.class);
+                startActivity(cancelint);
             }
         });
 
@@ -526,7 +338,6 @@ public class MB_TestActivity_Part1 extends AppCompatActivity {
             toNextPart();
         }
         else{
-
             opt1.setText(memorieslist.get(6).getPeople());
             opt2.setText(memorieslist.get(5).getPeople());
             opt3.setText(memorieslist.get(4).getPeople());
@@ -702,6 +513,5 @@ public class MB_TestActivity_Part1 extends AppCompatActivity {
         }
         return false;
     }
-
 
 }
