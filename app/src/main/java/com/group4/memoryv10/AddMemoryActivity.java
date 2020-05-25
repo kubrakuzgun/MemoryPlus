@@ -32,7 +32,6 @@ public class AddMemoryActivity extends AppCompatActivity {
     public Uri imgURL;
     FirebaseUser user;
     private FirebaseAuth mAuth;
-    String memoryURL;
     String imgpeople;
     String imgdate;
     String imgplace;
@@ -61,11 +60,6 @@ public class AddMemoryActivity extends AppCompatActivity {
         date = findViewById(R.id.dateTxt);
         place = findViewById(R.id.placeTxt);
 
-        //check empty inputs
-        checkFields(people);
-        checkFields(date);
-        checkFields(place);
-
         //set click listeners to choose and upload buttons
         ch.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -90,10 +84,16 @@ public class AddMemoryActivity extends AppCompatActivity {
 
     //function to upload photo to firebase storage
     private void Fileuploader(){
+        //check empty inputs
+        checkFields(people);
+        checkFields(date);
+        checkFields(place);
+
         user = mAuth.getCurrentUser();
         //get current time
         setTimeStamp();
-        final StorageReference imageRef = storageRef.child("Users/" + user.getUid() + "/Memories/" + getTimeStamp()); //timestamp is used as the photo's name
+        //timestamp is used as the photo's name to be unique
+        final StorageReference imageRef = storageRef.child("Users/" + user.getUid() + "/Memories/" + getTimeStamp());
         imgpeople = people.getText().toString();
         imgdate = date.getText().toString();
         imgplace = place.getText().toString();
@@ -106,8 +106,7 @@ public class AddMemoryActivity extends AppCompatActivity {
                         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                // Get a URL to the uploaded photo
-                                memoryURL = uri.toString();
+                                // OK
                             }
                         });
 

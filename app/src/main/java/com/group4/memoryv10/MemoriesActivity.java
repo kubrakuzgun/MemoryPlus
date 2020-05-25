@@ -1,6 +1,7 @@
 package com.group4.memoryv10;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,7 +26,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public class MemoriesActivity extends AppCompatActivity {
     String ctPin;
@@ -36,7 +40,8 @@ public class MemoriesActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private final String TAG = this.getClass().getName().toUpperCase();
     private List<Memory> mUploads;
-    Query mQuery;
+    HashMap<Integer, Memory> map;
+    TreeMap<Integer, Memory> orderedmap;
 
     //create action bar menu
     @Override
@@ -50,7 +55,7 @@ public class MemoriesActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            case R.id.edit:
                 //create alert to get admin (caretaker) pin
                 AlertDialog.Builder alert = new AlertDialog.Builder(MemoriesActivity.this);
                 alert.setTitle("Dikkat");
@@ -137,28 +142,33 @@ public class MemoriesActivity extends AppCompatActivity {
         mUploads = new ArrayList<>();
         memoriesRef = databaseReference.child("Memories").child(user.getUid());
 
-        //order memories by date (like a timeline)
-        mQuery = memoriesRef.orderByChild("date");
+        map = new HashMap<>();
+        orderedmap = new TreeMap<>();
 
         //get memories from database
-        mQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        memoriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int count = 0;
                 for (DataSnapshot datas: dataSnapshot.getChildren()) {
+                    //get data as an object of memory class
                     Memory memory = datas.getValue(Memory.class);
-
-                    //add each memory to array list
-                    mUploads.add(memory);
-
+                    //get each memory's year
+                    String[] date = memory.getDate().split(" ");
+                    Integer year = Integer.parseInt(date[1]);
+                    //add memories to map
+                    map.put(year,memory);
                     //count memories
                     count++;
                 }
-
+                //order memories by date (like a timeline)
+                orderedmap.putAll(map);
+                mUploads =  new ArrayList<Memory>((orderedmap.values()));
+                Collections.reverse(mUploads);
                 //create an adapter to display each memory
                 mAdapter = new ImageAdapter(MemoriesActivity.this, mUploads);
 
-                //attach adapter to activity's view
+                //attach adapter to activity's view (add card to recycler view)
                 view.setAdapter(mAdapter);
 
                 //if user has no memories
@@ -174,7 +184,7 @@ public class MemoriesActivity extends AppCompatActivity {
         });
     }
 
-    //when action bar back button clicked
+    //when action bar back button clicked, close activity
     @Override
     public boolean onSupportNavigateUp(){
         finish();

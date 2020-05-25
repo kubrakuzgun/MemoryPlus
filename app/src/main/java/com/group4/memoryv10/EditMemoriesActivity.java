@@ -26,7 +26,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public class EditMemoriesActivity extends AppCompatActivity implements EditImageAdapter.OnItemClickListener {
     StorageReference storageRef;
@@ -38,7 +41,8 @@ public class EditMemoriesActivity extends AppCompatActivity implements EditImage
     private List<Memory> mUploads;
     RecyclerView view;
     EditImageAdapter mAdapter;
-    Query mQuery;
+    HashMap<Integer, Memory> map;
+    TreeMap<Integer, Memory> orderedmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +68,12 @@ public class EditMemoriesActivity extends AppCompatActivity implements EditImage
 
         //create an array list to keep the memories in the database
         mUploads = new ArrayList<>();
+        map = new HashMap<>();
+        orderedmap = new TreeMap<>();
 
-        //order memories by date (like a timeline)
-        mQuery = memoriesRef.orderByChild("date");
 
         //get memories from database
-        mQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        memoriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //reset memories array list
@@ -80,10 +84,16 @@ public class EditMemoriesActivity extends AppCompatActivity implements EditImage
                     memoryCount++;
                     Memory upload = datas.getValue(Memory.class);
                     upload.setKey(datas.getKey());
-
-                    //add each memory to array list
-                    mUploads.add(upload);
+                    //get each memory's year
+                    String[] date = upload.getDate().split(" ");
+                    Integer year = Integer.parseInt(date[1]);
+                    //add memories to map
+                    map.put(year,upload);
                 }
+                //order memories by date (like a timeline)
+                orderedmap.putAll(map);
+                mUploads =  new ArrayList<Memory>((orderedmap.values()));
+                Collections.reverse(mUploads);
 
                 //create an adapter to display each memory
                 mAdapter = new EditImageAdapter(EditMemoriesActivity.this, mUploads);

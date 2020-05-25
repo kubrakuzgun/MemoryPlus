@@ -23,11 +23,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //attach xml layout to activity
         setContentView(R.layout.activity_login);
-        email = (EditText) findViewById(R.id.memberEmail);
-        password = (EditText) findViewById(R.id.memberPassword);
-        registerButton = (TextView) findViewById(R.id.newmemberButton);
-        loginButton = (Button) findViewById(R.id.registerButton);
+        email = findViewById(R.id.memberEmail);
+        password = findViewById(R.id.memberPassword);
+        registerButton = findViewById(R.id.newmemberButton);
+        loginButton = findViewById(R.id.registerButton);
+        //get all authentication info
         firebaseAuth = FirebaseAuth.getInstance();
 
         //when login button pressed
@@ -44,11 +46,12 @@ public class LoginActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             //if email or password is wrong
                             if(!task.isSuccessful()){
-                                Toast.makeText(LoginActivity.this,"Giriş başarısız, lütfen tekrar deneyin.",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this,"E-posta adresi ya da şifre hatalı.",Toast.LENGTH_SHORT).show();
                             }
+                            //if email and password are correct
                             else{
                                 Toast.makeText(LoginActivity.this,"Giriş başarılı.",Toast.LENGTH_SHORT).show();
-                                Intent intToHome = new Intent(LoginActivity.this,HomeActivity.class);
+                                Intent intToHome = new Intent(LoginActivity.this, HomeActivity.class);
                                 startActivity(intToHome);
                             }
                         }
@@ -68,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(registerIntent);
     }
 
-    //close app when back pressed
+    //close app when navigation back pressed
     @Override
     public void onBackPressed(){
         finishAffinity();

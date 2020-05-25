@@ -65,6 +65,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot datas: dataSnapshot.getChildren()) {
+                    //get user with current user's id
                     if(datas.child("id").getValue().equals(user.getUid())){
                         caretaker_pin = datas.child("caretakerPin").getValue().toString();
                         break;
@@ -161,7 +162,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     //redirect to games activity
-    public void toExercisesIntent(View v){
+    public void toGamesIntent(View v){
         Intent gamesint = new Intent(HomeActivity.this, GamesActivity.class);
         startActivity(gamesint);
     }

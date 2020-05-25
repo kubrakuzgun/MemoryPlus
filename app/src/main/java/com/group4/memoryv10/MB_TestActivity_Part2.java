@@ -51,7 +51,7 @@ public class MB_TestActivity_Part2 extends AppCompatActivity {
     private List<Memory> memorieslist;
     long startTime, elapsedSeconds, totalreacttime;
     String reactionTime;
-    ArrayList<TextView> opts;
+    ArrayList<Button> opts;
     ArrayList<String> ansflags, reactionTimes;
     Query mQuery;
     int memocount, remainingmemos, clickcount, truecount, falsecount, passcount;
@@ -80,6 +80,7 @@ public class MB_TestActivity_Part2 extends AppCompatActivity {
         opts.add(opt1);
         opts.add(opt2);
         opts.add(opt3);
+
 
         //array list to keep whether answers are true or false
         ansflags = new ArrayList<>();

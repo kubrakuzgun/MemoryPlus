@@ -2,12 +2,17 @@ package com.group4.memoryv10;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,53 +36,37 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        name = (EditText) findViewById(R.id.name);
-        surname = (EditText) findViewById(R.id.surname);
-        email = (EditText) findViewById(R.id.memberEmail);
-        password = (EditText) findViewById(R.id.memberPassword);
-        confirmpsw = (EditText) findViewById(R.id.confirmpsw);
-        registerButton = (Button) findViewById(R.id.registerButton);
-        loginTxt = (TextView) findViewById(R.id.loginTxt);
+        name = findViewById(R.id.name);
+        surname = findViewById(R.id.surname);
+        email = findViewById(R.id.memberEmail);
+        password = findViewById(R.id.memberPassword);
+        confirmpsw = findViewById(R.id.confirmpsw);
+        registerButton = findViewById(R.id.registerButton);
+        loginTxt = findViewById(R.id.loginTxt);
         firebaseAuth = FirebaseAuth.getInstance();
-
-        //check empty inputs
-        checkFields(name);
-        checkFields(surname);
-        checkFields(email);
-        checkFields(password);
 
         //when register button clicked
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //check empty inputs
+                checkFields(name);
+                checkFields(surname);
+                checkFields(email);
+                checkFields(password);
+                checkFields(confirmpsw);
+
+                //convert fields to string
                 String uemail = email.getText().toString().trim();
                 String upassword = password.getText().toString().trim();
                 String confrimpass = confirmpsw.getText().toString().trim();
-                final String uname = name.getText().toString().trim();
-                final String usurname = surname.getText().toString().trim();
 
-                if(TextUtils.isEmpty(uname)){
-                    name.setError("Bu alan boş bırakılamaz.");
-                    name.requestFocus();
-                }
-                else if(TextUtils.isEmpty(usurname)){
-                    surname.setError("Bu alan boş bırakılamaz.");
-                    surname.requestFocus();
-                }
-                else if(TextUtils.isEmpty(uemail)){
-                    email.setError("Bu alan boş bırakılamaz.");
-                    email.requestFocus();
-                }
-                else  if(TextUtils.isEmpty(upassword)){
-                    password.setError("Bu alan boş bırakılamaz.");
-                    password.requestFocus();
-                }
-                else  if(TextUtils.isEmpty(confrimpass)){
-                    password.setError("Bu alan boş bırakılamaz.");
-                    password.requestFocus();
-                }
-                //check password length
-                else if (!TextUtils.isEmpty(uemail) && (!TextUtils.isEmpty(upassword)) && (!TextUtils.isEmpty(uname)) && (!TextUtils.isEmpty(usurname))){
+                //make uname and usurname final to use in static content
+                 final String uname = name.getText().toString().trim();
+                 final String usurname = surname.getText().toString().trim();
+
+                if (!TextUtils.isEmpty(uemail) && (!TextUtils.isEmpty(upassword)) && (!TextUtils.isEmpty(uname)) && (!TextUtils.isEmpty(usurname))){
+                    //check password length
                     if(upassword.length()<6){
                         password.setError("Şifre en az 6 karakter olmalıdır.");
                     }
@@ -90,13 +79,14 @@ public class RegisterActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 //if there is an error due to firebaseAuth
                                 if(!task.isSuccessful()){
-                                    Toast.makeText(RegisterActivity.this,"Kayıt başarısız, lütfen tekrar deneyin.",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(RegisterActivity.this,"Geçersiz e-posta ya da şifre, lütfen tekrar deneyin.",Toast.LENGTH_SHORT).show();
                                 }
                                 else {
                                     Toast.makeText(RegisterActivity.this,"Kayıt başarılı.",Toast.LENGTH_SHORT).show();
                                     FirebaseUser user = firebaseAuth.getCurrentUser();
                                     //save user to database
                                     writeNewUser(user.getUid(), uname, usurname, 0, " ", " ", " ", " ", 0, " ", " ", 1234);
+                                    createCaretakerPin();
                                     startActivity(new Intent(RegisterActivity.this,HomeActivity.class));
                                 }
                             }
@@ -131,5 +121,50 @@ public class RegisterActivity extends AppCompatActivity {
             field.requestFocus();
             field.setError("Bu alan boş bırakılamaz.");
         }
+    }
+
+    public void createCaretakerPin(){
+        android.app.AlertDialog.Builder alert = new AlertDialog.Builder(RegisterActivity.this);
+        LinearLayout ll = new LinearLayout(RegisterActivity.this);
+
+        final EditText inputpin = new EditText(RegisterActivity.this);
+        inputpin.setInputType(InputType.TYPE_CLASS_TEXT  | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        inputpin.setHint("Yönetici şifresi");
+        checkFields(inputpin);
+
+        final EditText inputcpin = new EditText(RegisterActivity.this);
+        inputcpin.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        inputcpin.setHint("Şifreyi onayla");
+        checkFields(inputcpin);
+
+        ll.setOrientation(LinearLayout.VERTICAL);
+        ll.addView(inputpin);
+        ll.addView(inputcpin);
+
+        alert.setTitle("Yönetici şifresi oluştur");
+        alert.setView(ll);
+        alert.setPositiveButton("Oluştur", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String pin = inputpin.getText().toString().trim();
+                String cpin = inputcpin.getText().toString().trim();
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+                FirebaseUser currentuser = auth.getCurrentUser();
+                DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+                if(pin.length()>=4 && cpin.length()>=4){
+                    if(pin.equals(cpin)){
+                        dbRef.child("Users").child(currentuser.getUid()).child("caretakerPin").setValue(pin);
+                        Toast.makeText(RegisterActivity.this, "Yönetici şifresi oluşturuldu", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(RegisterActivity.this, "Şifreler eşleşmiyor, lütfen tekrar deneyin..", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                else {
+                    Toast.makeText(RegisterActivity.this, "Şifre en az 4 karakter olmalıdır.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 }

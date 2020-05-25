@@ -16,10 +16,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.List;
 
+
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
     StorageReference storageRef;
     private Context mContext;
     private List<Memory> mUploads;
+
 
     //Constructor
     public ImageAdapter(Context context, List<Memory> uploads) {

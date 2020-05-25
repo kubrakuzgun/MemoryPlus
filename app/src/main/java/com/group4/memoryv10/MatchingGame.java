@@ -7,7 +7,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -15,53 +14,34 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Chronometer;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class MatchingGame extends AppCompatActivity {
-
-    ImageView image1;
-    ImageView image2;
-    ImageView image3;
-    ImageView image4;
-    ImageView image5;
-    ImageView image6;
-    ImageView image7;
-    ImageView image8;
-    ImageView image9;
-    ImageView image10;
-    ImageView image11;
-    ImageView image12;
-    TextView score;
-    TextView time;
+    ImageView image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11, image12;
+    int FirstImage, SecondImage, number=1, Score=0, FirstView, SecondView, truecount, falsecount;
+    TextView score,time;
     Integer[] array;
     List<Integer> list;
+    ArrayList<ImageView> images;
     Chronometer chronometer;
-    int FirstImage;
-    int SecondImage;
-    int number =1;
-    int Score =0;
-    int FirstView;
-    int SecondView;
-    int truecount, falsecount;
     String elapsedtime;
     MediaPlayer myMediaPlayer = null;
 
+    //rotate images
     protected void Animate(ImageView view){
         final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
         final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
@@ -213,12 +193,7 @@ public class MatchingGame extends AppCompatActivity {
                         startActivity(nextint);
                     }
                 }.start();
-
-
             }
-
-
-
         }
     }
     protected void ChangeImage(ImageView view,int tag){
@@ -362,7 +337,6 @@ public class MatchingGame extends AppCompatActivity {
                 image11.setEnabled(false);
             if(tag==11)
                 image12.setEnabled(false);
-
         }
         else
         {
@@ -391,10 +365,12 @@ public class MatchingGame extends AppCompatActivity {
             },2000);
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matching_game);
+
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
 
@@ -420,95 +396,31 @@ public class MatchingGame extends AppCompatActivity {
         Collections.shuffle(list);
         list.toArray(array);
 
-        image1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image1,0);
-            }
-        });
-        image2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image2,1);
-            }
-        });
-        image3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image3,2);
-            }
-        });
-        image4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image4,3);
-            }
-        });
-        image5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image5,4);
-            }
-        });
-        image6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image6,5);
-            }
-        });
-        image7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image7,6);
-            }
-        });
-        image8.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image8,7);
-            }
-        });
-        image9.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image9,8);
-            }
-        });
-        image10.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image10,9);
-            }
-        });
-        image11.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image11,10);
-            }
-        });
-        image12.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image12,11);
-            }
-        });
+        images = new ArrayList<>();
+        images.add(image1);
+        images.add(image2);
+        images.add(image3);
+        images.add(image4);
+        images.add(image5);
+        images.add(image6);
+        images.add(image7);
+        images.add(image8);
+        images.add(image9);
+        images.add(image10);
+        images.add(image11);
+        images.add(image12);
 
-
+        for(int i=0; i<12; i++){
+            final int finalI = i;
+            images.get(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    ChangeImage(images.get(finalI),finalI);
+                }
+            });
+        }
     }
-
-
 
     private static boolean isExternalStorageReadOnly() {
         String extStorageState = Environment.getExternalStorageState();

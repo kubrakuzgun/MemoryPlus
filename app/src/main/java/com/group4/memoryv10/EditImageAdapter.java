@@ -26,6 +26,7 @@ public class EditImageAdapter extends RecyclerView.Adapter<EditImageAdapter.Imag
     private Context mContext;
     private List<Memory> mUploads;
 
+
     //Constructor
     public EditImageAdapter(Context context, List<Memory> uploads) {
         mContext = context;
@@ -97,7 +98,7 @@ public class EditImageAdapter extends RecyclerView.Adapter<EditImageAdapter.Imag
             itemView.setOnCreateContextMenuListener(this);
         }
 
-        //when clicked to a memory view
+        //when clicked to a memory view, get position
         @Override
         public void onClick(View v) {
             //if view has a click listener
@@ -111,17 +112,17 @@ public class EditImageAdapter extends RecyclerView.Adapter<EditImageAdapter.Imag
             }
         }
 
-        //edit menu
+        //create menu
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.setHeaderTitle("İşlemler");
             MenuItem edit = menu.add(Menu.NONE, 1, 1, "Düzenle");
             MenuItem delete = menu.add(Menu.NONE, 2, 2, "Sil");
 
-            //set click lisener to edit option
+            //set click listener to edit option
             edit.setOnMenuItemClickListener(this);
 
-            //set click lisener to delete option
+            //set click listener to delete option
             delete.setOnMenuItemClickListener(this);
         }
 

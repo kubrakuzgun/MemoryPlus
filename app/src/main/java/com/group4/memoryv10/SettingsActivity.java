@@ -147,7 +147,6 @@ public class SettingsActivity extends AppCompatActivity {
                                 });
                             } else {
                                 Toast.makeText(getContext(), "Şifreler eşleşmiyor, lütfen tekrar deneyin.", Toast.LENGTH_SHORT).show();
-
                             }
                         }
                         else {
@@ -202,7 +201,6 @@ public class SettingsActivity extends AppCompatActivity {
                             else{
                                 Toast.makeText(getContext(), "Şifreler eşleşmiyor, lütfen tekrar deneyin..", Toast.LENGTH_SHORT).show();
                             }
-
                         }
                         else {
                             Toast.makeText(getContext(), "Şifre en az 4 karakter olmalıdır.", Toast.LENGTH_SHORT).show();
