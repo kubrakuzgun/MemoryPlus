@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -13,6 +14,9 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
+import androidx.preference.SwitchPreferenceCompat;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -21,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class SettingsActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
@@ -84,6 +89,41 @@ public class SettingsActivity extends AppCompatActivity {
                                     }
                                 })
                         .setNegativeButton("İptal", null).show();
+                return true;
+            }
+
+            else if(key.equals("notifications")){
+                final SwitchPreferenceCompat switchpref = (SwitchPreferenceCompat) preference;
+                // SwitchPreference preference change listener
+                preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object o) {
+                        if(switchpref.isChecked()){
+                            FirebaseMessaging.getInstance().subscribeToTopic("reminder")
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (!task.isSuccessful()) {
+                                                Log.d("", "ok");
+                                            }
+                                            Log.d("", "fail");
+                                        }
+                                    });
+                        }else {
+                            FirebaseMessaging.getInstance().unsubscribeFromTopic("reminder")
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (!task.isSuccessful()) {
+                                                Log.d("", "ok");
+                                            }
+                                            Log.d("", "fail");
+                                        }
+                                    });
+                        }
+                        return false;
+                    }
+                });
                 return true;
             }
 
@@ -228,5 +268,9 @@ public class SettingsActivity extends AppCompatActivity {
             field.requestFocus();
             field.setError("Bu alan boş bırakılamaz.");
         }
+    }
+
+    public void notificationPreference(){
+
     }
 }

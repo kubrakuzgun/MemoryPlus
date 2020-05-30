@@ -173,17 +173,19 @@ public class EditMemoriesActivity extends AppCompatActivity implements EditImage
                 checkFields(inputdate);
                 checkFields(inputplace);
 
-                String newpeople = inputpeople.getText().toString().trim();
-                String newdate = inputdate.getText().toString().trim();
-                String newplace = inputplace.getText().toString().trim();
-
-                //update database
-                memoriesRef.child(selectedKey).child("people").setValue(newpeople);
-                memoriesRef.child(selectedKey).child("date").setValue(newdate);
-                memoriesRef.child(selectedKey).child("place").setValue(newplace);
-
-                Toast.makeText(EditMemoriesActivity.this, "Anı düzenlendi.", Toast.LENGTH_SHORT).show();
-
+                if(checkFields(inputpeople) && checkFields(inputdate) && checkFields(inputplace) && checkDateFormat(inputdate)){
+                    String newpeople = inputpeople.getText().toString().trim();
+                    String newdate = inputdate.getText().toString().trim();
+                    String newplace = inputplace.getText().toString().trim();
+                    //update database
+                    memoriesRef.child(selectedKey).child("people").setValue(newpeople);
+                    memoriesRef.child(selectedKey).child("date").setValue(newdate);
+                    memoriesRef.child(selectedKey).child("place").setValue(newplace);
+                    Toast.makeText(EditMemoriesActivity.this, "Anı düzenlendi.", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(EditMemoriesActivity.this, "Hata! Boş alan bırakmadan tekrar deneyin.", Toast.LENGTH_SHORT).show();
+                }
                 //reload activity to display changes
                 reloadActivity();
                 }
@@ -255,15 +257,29 @@ public class EditMemoriesActivity extends AppCompatActivity implements EditImage
     {
         //After a pause OR at startup, reload view
         super.onResume();
-
     }
 
     //check empty inputs
-    public void checkFields(EditText field){
+    public boolean checkFields(EditText field){
         if(field.length()==0)
         {
             field.requestFocus();
             field.setError("Bu alan boş bırakılamaz.");
+            return false;
         }
+        return true;
+    }
+
+    //check date format
+    public boolean checkDateFormat(EditText field){
+        String[] date = field.getText().toString().split(" ");
+
+        if(date.length != 2)
+        {
+            field.requestFocus();
+            field.setError("Tarihi ay ve yıl olarak giriniz.");
+            return false;
+        }
+        return true;
     }
 }

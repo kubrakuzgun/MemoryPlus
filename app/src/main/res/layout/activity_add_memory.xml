@@ -85,7 +85,7 @@
         android:id="@+id/dateTxt"
         android:layout_width="330dp"
         android:layout_height="50dp"
-        android:hint="Tarih"
+        android:hint="Tarih (Ay Yıl)"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.55"

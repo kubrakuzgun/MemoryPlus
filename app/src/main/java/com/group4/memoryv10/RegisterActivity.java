@@ -124,6 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void createCaretakerPin(){
+        //create alert dialog to get caretaker pin
         android.app.AlertDialog.Builder alert = new AlertDialog.Builder(RegisterActivity.this);
         LinearLayout ll = new LinearLayout(RegisterActivity.this);
 

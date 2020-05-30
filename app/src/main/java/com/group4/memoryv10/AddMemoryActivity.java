@@ -89,44 +89,49 @@ public class AddMemoryActivity extends AppCompatActivity {
         checkFields(date);
         checkFields(place);
 
-        user = mAuth.getCurrentUser();
-        //get current time
-        setTimeStamp();
-        //timestamp is used as the photo's name to be unique
-        final StorageReference imageRef = storageRef.child("Users/" + user.getUid() + "/Memories/" + getTimeStamp());
-        imgpeople = people.getText().toString();
-        imgdate = date.getText().toString();
-        imgplace = place.getText().toString();
+        if(checkFields(people) && checkFields(date) && checkFields(place) && checkDateFormat(date)){
+            user = mAuth.getCurrentUser();
+            //get current time
+            setTimeStamp();
+            //timestamp is used as the photo's name to be unique
+            final StorageReference imageRef = storageRef.child("Users/" + user.getUid() + "/Memories/" + getTimeStamp());
+            imgpeople = people.getText().toString();
+            imgdate = date.getText().toString();
+            imgplace = place.getText().toString();
 
-        //upload file to firebase storage
-        imageRef.putFile(imgURL)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                // OK
-                            }
-                        });
+            //upload file to firebase storage
+            imageRef.putFile(imgURL)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    // OK
+                                }
+                            });
 
-                        //save photo's url to users database
-                        saveImageUrlToDatabase(user.getUid(),getTimeStamp(),imgpeople,imgdate,imgplace);
+                            //save photo's url to users database
+                            saveImageUrlToDatabase(user.getUid(),getTimeStamp(),imgpeople,imgdate,imgplace);
 
-                        Toast.makeText(AddMemoryActivity.this,"Fotoğraf başarıyla yüklendi.",Toast.LENGTH_LONG).show();
+                            Toast.makeText(AddMemoryActivity.this,"Anı başarıyla yüklendi.",Toast.LENGTH_LONG).show();
 
-                        //reload view to display changes
-                        reloadActivity();
-                        onBackPressed();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        Toast.makeText(AddMemoryActivity.this,"Fotoğrafı yüklerken bir hata oluştu.",Toast.LENGTH_LONG).show();
-                    }
-                });
+                            //reload view to display changes
+                            reloadActivity();
+                            onBackPressed();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Toast.makeText(AddMemoryActivity.this,"Fotoğrafı yüklerken bir hata oluştu.",Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }
+        else{
+            Toast.makeText(AddMemoryActivity.this,"Hata! Boş alan bırakmadan tekrar deneyiniz.",Toast.LENGTH_LONG).show();
+        }
     }
 
     //function to choose photo from device
@@ -147,7 +152,7 @@ public class AddMemoryActivity extends AppCompatActivity {
             img.setImageURI(imgURL);
         }
         else{
-            Toast.makeText(AddMemoryActivity.this,"Beklenmedik bir hata oluştu.",Toast.LENGTH_LONG).show();
+            Toast.makeText(AddMemoryActivity.this,"Fotoğraf seçmediniz.",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -188,11 +193,26 @@ public class AddMemoryActivity extends AppCompatActivity {
     }
 
     //check empty inputs
-    public void checkFields(EditText field){
+    public boolean checkFields(EditText field){
         if(field.length()==0)
         {
             field.requestFocus();
             field.setError("Bu alan boş bırakılamaz.");
+            return false;
         }
+        return true;
+    }
+
+    //check date format
+    public boolean checkDateFormat(EditText field){
+        String[] date = field.getText().toString().split(" ");
+
+        if(date.length != 2)
+        {
+            field.requestFocus();
+            field.setError("Tarihi ay ve yıl olarak giriniz.");
+            return false;
+        }
+        return true;
     }
 }

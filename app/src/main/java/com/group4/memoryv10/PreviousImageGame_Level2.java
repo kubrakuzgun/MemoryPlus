@@ -1,28 +1,37 @@
 package com.group4.memoryv10;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
-public class PreviousImageGame extends AppCompatActivity {
+public class PreviousImageGame_Level2 extends AppCompatActivity {
     ImageView mainimg, img1, img2, img3, img4;
     TextView examinetxt, choosetxt, score, time;
     ArrayList<Integer> imagesList;
@@ -30,11 +39,15 @@ public class PreviousImageGame extends AppCompatActivity {
     int truecount, falsecount;
     Chronometer chronometer;
     String elapsedtime;
+    DatabaseReference databaseReference;
+    FirebaseUser user;
+    private FirebaseAuth mAuth;
+    StorageReference storageRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_previous_image_game);
+        setContentView(R.layout.activity_previous_image_game_level2);
 
         mainimg = findViewById(R.id.img);
         img1 = findViewById(R.id.img1);
@@ -51,14 +64,17 @@ public class PreviousImageGame extends AppCompatActivity {
 
         //add drawables to array list
         imagesList = new ArrayList<>();
-        imagesList.add(R.drawable.ucgen);
-        imagesList.add(R.drawable.kare);
-        imagesList.add(R.drawable.besgen);
-        imagesList.add(R.drawable.altigen);
-        imagesList.add(R.drawable.eskenar);
-        imagesList.add(R.drawable.yamuk);
-        imagesList.add(R.drawable.yildiz1);
-        imagesList.add(R.drawable.yildiz2);
+        imagesList.add(R.drawable.shape1);
+        imagesList.add(R.drawable.shape2);
+        imagesList.add(R.drawable.shape3);
+        imagesList.add(R.drawable.shape4);
+        imagesList.add(R.drawable.shape5);
+        imagesList.add(R.drawable.shape6);
+        imagesList.add(R.drawable.shape7);
+        imagesList.add(R.drawable.shape8);
+        imagesList.add(R.drawable.shape9);
+        imagesList.add(R.drawable.shape10);
+        imagesList.add(R.drawable.shape12);
         Collections.shuffle(imagesList);
 
         //add image views to array list
@@ -161,7 +177,6 @@ public class PreviousImageGame extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished) {
             }
-
             @Override
             public void onFinish() {
                 examinetxt.setVisibility(View.INVISIBLE);
@@ -182,11 +197,8 @@ public class PreviousImageGame extends AppCompatActivity {
 
     public void saveResults() {
 
-        if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
-            Toast.makeText(PreviousImageGame.this, "Depolama alanına erişilemiyor.", Toast.LENGTH_LONG).show();
-        }
 
-        //create file to write results
+        //open file to write new results
         File file = new File(getExternalFilesDir(null), "piresult.txt");
 
         if (!file.exists()) {
@@ -199,7 +211,7 @@ public class PreviousImageGame extends AppCompatActivity {
         try {
             //add results to file
             BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
-            buf.append("Önceki resmi bulma 1: Kolay seviye:");
+            buf.append("Önceki resmi bulma 2: Zor seviye:");
             buf.newLine();
             buf.newLine();
             buf.append("Doğru Sayısı:  ").append(String.valueOf(truecount));
@@ -214,13 +226,47 @@ public class PreviousImageGame extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            mAuth = FirebaseAuth.getInstance();
+            user = mAuth.getCurrentUser();
+            storageRef = FirebaseStorage.getInstance().getReference();
+
+            //get current time stamp to use as file name
+            final String timeStamp = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+            final StorageReference fileRef = storageRef.child("Users/" + user.getUid() + "/Game Results/PreviousImage/" + timeStamp + ".txt");
+            Uri fileuri = Uri.fromFile(file);
+
+            //upload file to firebase storage
+            fileRef.putFile(fileuri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                }
+                            });
+                            //save file name(url) to firebase database
+                            saveFileUrlToDatabase(timeStamp);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            // ...
+                        }
+                    });
+
+            //delete file from device
+            file.delete();
+
             //create alert dialog
-            AlertDialog.Builder builder = new AlertDialog.Builder(PreviousImageGame.this);
-            builder.setTitle("Birince seviye tamamlandı!");
-            builder.setMessage("Bir sonraki seviye için hazır olun.");
+            AlertDialog.Builder builder = new AlertDialog.Builder(PreviousImageGame_Level2.this);
+            builder.setTitle("Harika!");
+            builder.setMessage("Oyunu tamamladınız.");
             final AlertDialog diag = builder.create();
             diag.show();
-            new CountDownTimer(4000, 1000) {
+            new CountDownTimer(3000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                 }
@@ -230,18 +276,24 @@ public class PreviousImageGame extends AppCompatActivity {
                     //close dialog
                     diag.dismiss();
                     //redirect to second part
-                    Intent nextint = new Intent(PreviousImageGame.this, PreviousImageGame_Level2.class);
-                    startActivity(nextint);
+                    Intent gamesint = new Intent(PreviousImageGame_Level2.this, GamesActivity.class);
+                    startActivity(gamesint);
                 }
             }.start();
         }
+    }
+
+    //function to save file name(url) to firebase database
+    public void saveFileUrlToDatabase(String fileurl) {
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("GameResults").child("Matching").child(user.getUid()).child(fileurl).setValue(fileurl);
     }
 
     //override onBackPressed function to alert user and cancel test
     @Override
     public void onBackPressed() {
         //create alert to cancel test
-        AlertDialog.Builder alert = new AlertDialog.Builder(PreviousImageGame.this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(PreviousImageGame_Level2.this);
         alert.setTitle("Testi iptal etmek istiyor musunuz?");
         alert.setMessage("İlerlemeniz kaydedilmeyecek.");
         alert.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
@@ -250,7 +302,7 @@ public class PreviousImageGame extends AppCompatActivity {
                 if (file.exists()){
                     file.delete();
                 }
-                Intent cancelint = new Intent(PreviousImageGame.this, HomeActivity.class);
+                Intent cancelint = new Intent(PreviousImageGame_Level2.this, HomeActivity.class);
                 startActivity(cancelint);
             }
         });
@@ -262,19 +314,4 @@ public class PreviousImageGame extends AppCompatActivity {
         alert.show();
     }
 
-    private static boolean isExternalStorageReadOnly() {
-        String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean isExternalStorageAvailable() {
-        String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
-            return true;
-        }
-        return false;
-    }
 }

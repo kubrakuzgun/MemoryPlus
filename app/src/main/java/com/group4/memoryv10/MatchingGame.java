@@ -1,7 +1,6 @@
 package com.group4.memoryv10;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -26,356 +25,89 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 
 public class MatchingGame extends AppCompatActivity {
     ImageView image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11, image12;
-    int FirstImage, SecondImage, number=1, Score=0, FirstView, SecondView, truecount, falsecount;
+    int Score=0, truecount, falsecount, clickcount;
+    int drw1,drw2, drw3, drw4, drw5, drw6;
+    int audio1, audio2, audio3, audio4, audio5, audio6;
+    AudioManager audioManager;
+    HashMap<Integer, Integer> audioMap;
     TextView score,time;
-    Integer[] array;
-    List<Integer> list;
-    ArrayList<ImageView> images;
+    ArrayList<Integer> drawables, audios;
+    ArrayList<ImageView> images, selectedviews;
     Chronometer chronometer;
     String elapsedtime;
     MediaPlayer myMediaPlayer = null;
-
-    //rotate images
-    protected void Animate(ImageView view){
-        final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-        final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-        final ImageView View = view;
-        oa1.setInterpolator(new DecelerateInterpolator());
-        oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-        oa1.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                View.setImageResource(R.drawable.lookup);
-                oa2.start();
-            }
-        });
-        oa1.start();
-    }
-
-    protected void compare(){
-        if(FirstImage==SecondImage)
-        {
-            truecount++;
-            Score+=1;
-            score.setText("Skor: " + Score);
-            if(FirstView==0||SecondView==0)
-                image1.setVisibility(View.INVISIBLE);
-            if(FirstView==1||SecondView==1)
-                image2.setVisibility(View.INVISIBLE);
-            if(FirstView==2||SecondView==2)
-                image3.setVisibility(View.INVISIBLE);
-            if(FirstView==3||SecondView==3)
-                image4.setVisibility(View.INVISIBLE);
-            if(FirstView==4||SecondView==4)
-                image5.setVisibility(View.INVISIBLE);
-            if(FirstView==5||SecondView==5)
-                image6.setVisibility(View.INVISIBLE);
-            if(FirstView==6||SecondView==6)
-                image7.setVisibility(View.INVISIBLE);
-            if(FirstView==7||SecondView==7)
-                image8.setVisibility(View.INVISIBLE);
-            if(FirstView==8||SecondView==8)
-                image9.setVisibility(View.INVISIBLE);
-            if(FirstView==9||SecondView==9)
-                image10.setVisibility(View.INVISIBLE);
-            if(FirstView==10||SecondView==10)
-                image11.setVisibility(View.INVISIBLE);
-            if(FirstView==11||SecondView==11)
-                image12.setVisibility(View.INVISIBLE);
-        }
-        else
-        {
-            falsecount++;
-            if(FirstView==0||SecondView==0)
-                Animate(image1);
-            if(FirstView==1||SecondView==1)
-                Animate(image2);
-            if(FirstView==2||SecondView==2)
-                Animate(image3);
-            if(FirstView==3||SecondView==3)
-                Animate(image4);
-            if(FirstView==4||SecondView==4)
-                Animate(image5);
-            if(FirstView==5||SecondView==5)
-                Animate(image6);
-            if(FirstView==6||SecondView==6)
-                Animate(image7);
-            if(FirstView==7||SecondView==7)
-                Animate(image8);
-            if(FirstView==8||SecondView==8)
-                Animate(image9);
-            if(FirstView==9||SecondView==9)
-                Animate(image10);
-            if(FirstView==10||SecondView==10)
-                Animate(image11);
-            if(FirstView==11||SecondView==11)
-                Animate(image12);
-        }
-        image1.setEnabled(true);
-        image2.setEnabled(true);
-        image3.setEnabled(true);
-        image4.setEnabled(true);
-        image5.setEnabled(true);
-        image6.setEnabled(true);
-        image7.setEnabled(true);
-        image8.setEnabled(true);
-        image9.setEnabled(true);
-        image10.setEnabled(true);
-        image11.setEnabled(true);
-        image12.setEnabled(true);
-
-        if (Score==6)
-        {
-            chronometer.stop();
-            elapsedtime = time.getText().toString();
-
-            //save reaction time to file
-            if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
-                Toast.makeText(MatchingGame.this,"Depolama alanına erişilemiyor.",Toast.LENGTH_LONG).show();
-            }
-
-
-            File file = new File(getExternalFilesDir(null), "mgresult.txt");
-
-            if (!file.exists()) {
-                try {
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
-                buf.append("Sesli eşleştirme:");
-                buf.newLine();
-                buf.newLine();
-                buf.append("Doğru Deneme Sayısı:  ").append(String.valueOf(truecount));
-                buf.newLine();
-                buf.append("Yanlış Deneme Sayısı:  ").append(String.valueOf(falsecount));
-                buf.newLine();
-                buf.append("Toplam Reaksiyon Süresi:  ").append(String.valueOf(elapsedtime));
-                buf.newLine();
-                buf.newLine();
-                buf.newLine();
-                buf.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(MatchingGame.this);
-
-                builder.setTitle("Harika!");
-
-                builder.setMessage("Tüm resimleri eşleştirdiniz. Sıra sessiz eşleştirmede.");
-
-                final AlertDialog diag = builder.create();
-
-                diag.show();
-
-                new CountDownTimer(5000, 1000) {
-
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        diag.dismiss();
-                        Intent nextint = new Intent(MatchingGame.this, MatchingGame_NoAudio.class);
-                        startActivity(nextint);
-                    }
-                }.start();
-            }
-        }
-    }
-    protected void ChangeImage(ImageView view,int tag){
-        if(array[tag]==1)
-        {
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.araba);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.araba);
-            myMediaPlayer.start();
-
-        }
-        else if(array[tag]==2){
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.gozluk);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.gozluk);
-            myMediaPlayer.start();
-        }
-        else if(array[tag]==3){
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.telefon);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.telefon);
-            myMediaPlayer.start();
-        }
-        else if(array[tag]==4){
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.ordek);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.ordek);
-            myMediaPlayer.start();
-        }
-        else if(array[tag]==5){
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.gemi);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.gemi);
-            myMediaPlayer.start();
-        }
-        else if(array[tag]==6){
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.kalem);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-            myMediaPlayer = MediaPlayer.create(MatchingGame.this, R.raw.kalem);
-            myMediaPlayer.start();
-        }
-        if(number==1)
-        {
-            FirstImage=array[tag];
-            number=2;
-            FirstView= tag;
-            if (tag ==0)
-                image1.setEnabled(false);
-            if(tag ==1)
-                image2.setEnabled(false);
-            if(tag==2)
-                image3.setEnabled(false);
-            if(tag==3)
-                image4.setEnabled(false);
-            if(tag==4)
-                image5.setEnabled(false);
-            if(tag==5)
-                image6.setEnabled(false);
-            if(tag==6)
-                image7.setEnabled(false);
-            if(tag ==7)
-                image8.setEnabled(false);
-            if(tag==8)
-                image9.setEnabled(false);
-            if(tag==9)
-                image10.setEnabled(false);
-            if(tag==10)
-                image11.setEnabled(false);
-            if(tag==11)
-                image12.setEnabled(false);
-        }
-        else
-        {
-            SecondView= tag;
-            SecondImage=array[tag];
-            number=1;
-            image1.setEnabled(false);
-            image2.setEnabled(false);
-            image3.setEnabled(false);
-            image4.setEnabled(false);
-            image5.setEnabled(false);
-            image6.setEnabled(false);
-            image7.setEnabled(false);
-            image8.setEnabled(false);
-            image9.setEnabled(false);
-            image10.setEnabled(false);
-            image11.setEnabled(false);
-            image12.setEnabled(false);
-
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    compare();
-                }
-            },2000);
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matching_game);
 
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
 
         chronometer = findViewById(R.id.Time);
         chronometer.start();
+        score = findViewById(R.id.Score);
+        time = findViewById(R.id.Time);
+        selectedviews = new ArrayList<>();
+
+        audio1 = R.raw.gozluk;
+        audio2 = R.raw.araba;
+        audio3 = R.raw.ordek;
+        audio4 = R.raw.kalem;
+        audio5 = R.raw.telefon;
+        audio6 = R.raw.gemi;
+
+        //add audio files to an array list
+        audios = new ArrayList<>();
+        audios.add(audio1);
+        audios.add(audio2);
+        audios.add(audio3);
+        audios.add(audio4);
+        audios.add(audio5);
+        audios.add(audio6);
+        audios.add(audio1);
+        audios.add(audio2);
+        audios.add(audio3);
+        audios.add(audio4);
+        audios.add(audio5);
+        audios.add(audio6);
+
+        drw1 = R.drawable.gozluk;
+        drw2 = R.drawable.araba;
+        drw3 = R.drawable.ordek;
+        drw4 = R.drawable.kalem;
+        drw5 = R.drawable.telefon;
+        drw6 = R.drawable.gemi;
+
+        //add drawable images to an array list
+        drawables = new ArrayList<>();
+        drawables.add(drw1);
+        drawables.add(drw2);
+        drawables.add(drw3);
+        drawables.add(drw4);
+        drawables.add(drw5);
+        drawables.add(drw6);
+        drawables.add(drw1);
+        drawables.add(drw2);
+        drawables.add(drw3);
+        drawables.add(drw4);
+        drawables.add(drw5);
+        drawables.add(drw6);
+
+        //create a HashMap to match audios according to drawables
+        audioMap = new HashMap<Integer, Integer>();
+        for(int i=0; i<12; i++){
+            audioMap.put(drawables.get(i), audios.get(i));
+        }
+
+        //shuffle drawables
+        Collections.shuffle(drawables);
 
         image1= findViewById(R.id.image1);
         image2= findViewById(R.id.image2);
@@ -389,13 +121,8 @@ public class MatchingGame extends AppCompatActivity {
         image10= findViewById(R.id.image10);
         image11= findViewById(R.id.image11);
         image12= findViewById(R.id.image12);
-        score = findViewById(R.id.Score);
-        time = findViewById(R.id.Time);
-        array = new Integer[]{1,2,3,4,5,6,1,2,3,4,5,6};
-        list = Arrays.asList(array);
-        Collections.shuffle(list);
-        list.toArray(array);
 
+        //add image views to an array list
         images = new ArrayList<>();
         images.add(image1);
         images.add(image2);
@@ -412,13 +139,169 @@ public class MatchingGame extends AppCompatActivity {
 
         for(int i=0; i<12; i++){
             final int finalI = i;
-            images.get(i).setOnClickListener(new View.OnClickListener() {
+            //set onclick listener for each image view
+            images.get(i).setOnClickListener(new ImageView.OnClickListener() {
                 @Override
                 public void onClick(View v)
                 {
-                    ChangeImage(images.get(finalI),finalI);
+                    clickcount++;
+                    //prevent double click
+                    v.setEnabled(false);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            changeImage(finalI);
+                        }
+                    },500);
                 }
             });
+
+            //insert shuffled drawables into image views and add tags
+            images.get(i).setImageResource(R.drawable.lookup);
+            images.get(i).setTag(drawables.get(i));
+        }
+    }
+
+    //rotate image animation
+    protected void animate(ImageView view, int res){
+        final int resId = res;
+        final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
+        final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
+        final ImageView View = view;
+        oa1.setInterpolator(new DecelerateInterpolator());
+        oa2.setInterpolator(new AccelerateDecelerateInterpolator());
+        oa1.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                View.setImageResource(resId);
+                oa2.start();
+            }
+        });
+        oa1.start();
+    }
+
+    //play audio
+    public void playMedia(int rawid){
+        myMediaPlayer = MediaPlayer.create(MatchingGame.this, rawid);
+        myMediaPlayer.start();
+    }
+
+    //change image view's drawable resource
+    public void changeImage(int index){
+        //add clicked views to an array list
+        selectedviews.add(images.get(index));
+        animate(images.get(index),drawables.get(index));
+        //play audio according to drawable name
+        playMedia(audioMap.get(drawables.get(index)));
+
+        //when second image view is clicked
+        if(clickcount == 2){
+            //make other image views non-clickable
+            for (int j=0; j<12;j++){
+                images.get(j).setEnabled(false);
+            }
+
+            //create handler to run compare function with 2 seconds delay
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //call function to compare selected views
+                    compare(selectedviews);
+                    //reset click count
+                    clickcount = 0;
+                    //reset selected views array
+                    selectedviews.clear();
+                    for (int j=0; j<12;j++){
+                        //make other image views clickable again
+                        images.get(j).setEnabled(true);
+                    }
+                }
+            },2000);
+        }
+    }
+
+    //function to compare selected views by tag
+    protected void compare(ArrayList<ImageView> selectedimages){
+        //if the tags of selected views are the same
+        if(selectedimages.get(0).getTag().equals(selectedimages.get(1).getTag()))
+        {
+            truecount++;
+            Score+=1;
+            score.setText("Skor: " + Score);
+            //make views invisible
+            selectedimages.get(0).setVisibility(View.INVISIBLE);
+            selectedimages.get(1).setVisibility(View.INVISIBLE);
+        }
+        //if the tags of selected views are the different
+        else
+        {
+            falsecount++;
+            //revert views
+            animate(selectedviews.get(0), R.drawable.lookup);
+            animate(selectedviews.get(1), R.drawable.lookup);
+        }
+
+        //if all images are matched
+        if (Score==6)
+        {
+            chronometer.stop();
+            elapsedtime = time.getText().toString();
+
+            if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
+                Toast.makeText(MatchingGame.this,"Depolama alanına erişilemiyor.",Toast.LENGTH_LONG).show();
+            }
+
+            //create file to write results
+            File file = new File(getExternalFilesDir(null), "mgresult.txt");
+
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                //add results to file
+                BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
+                buf.append("Sesli eşleştirme:");
+                buf.newLine();
+                buf.newLine();
+                buf.append("Doğru Deneme Sayısı:  ").append(String.valueOf(truecount));
+                buf.newLine();
+                buf.append("Yanlış Deneme Sayısı:  ").append(String.valueOf(falsecount));
+                buf.newLine();
+                buf.append("Toplam Reaksiyon Süresi:  ").append(String.valueOf(elapsedtime));
+                buf.newLine();
+                buf.newLine();
+                buf.newLine();
+                buf.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                //create alert dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(MatchingGame.this);
+                builder.setTitle("Harika!");
+                builder.setMessage("Tüm resimleri eşleştirdiniz. Sıra sessiz eşleştirmede.");
+                final AlertDialog diag = builder.create();
+                diag.show();
+                new CountDownTimer(4000, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                    }
+                    @Override
+                    public void onFinish() {
+                        //close dialog
+                        diag.dismiss();
+                        //redirect to second part
+                        Intent nextint = new Intent(MatchingGame.this, MatchingGame_NoAudio.class);
+                        startActivity(nextint);
+                    }
+                }.start();
+            }
         }
     }
 
@@ -437,5 +320,4 @@ public class MatchingGame extends AppCompatActivity {
         }
         return false;
     }
-
 }

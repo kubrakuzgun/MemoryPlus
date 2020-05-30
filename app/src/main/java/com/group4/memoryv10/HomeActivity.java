@@ -58,7 +58,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        //access to users database
+        //access to users database to get caretaker pin
         userRef = databaseReference.child("Users");
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             String caretaker_pin;

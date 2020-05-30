@@ -2,31 +2,21 @@ package com.group4.memoryv10;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Chronometer;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,52 +26,152 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class MatchingGame_NoAudio extends AppCompatActivity {
-
-    ImageView image1;
-    ImageView image2;
-    ImageView image3;
-    ImageView image4;
-    ImageView image5;
-    ImageView image6;
-    ImageView image7;
-    ImageView image8;
-    ImageView image9;
-    ImageView image10;
-    ImageView image11;
-    ImageView image12;
-    TextView score;
-    TextView time;
-    Integer[] array;
-    List<Integer> list;
+    ImageView image1, image2, image3, image4, image5, image6, image7, image8, image9, image10, image11, image12;
+    int Score=0, truecount, falsecount, clickcount;
+    int drw1,drw2, drw3, drw4, drw5, drw6;
+    int audio1, audio2, audio3, audio4, audio5, audio6;
+    HashMap<Integer, Integer> audioMap;
+    TextView score,time;
+    ArrayList<Integer> drawables, audios;
+    ArrayList<ImageView> images, selectedviews;
     Chronometer chronometer;
-    int FirstImage;
-    int SecondImage;
-    int number =1;
-    int Score =0;
-    int FirstView;
-    int SecondView;
-    int truecount, falsecount;
     String elapsedtime;
-    MediaPlayer myMediaPlayer = null;
-
     DatabaseReference databaseReference;
     FirebaseUser user;
     private FirebaseAuth mAuth;
     StorageReference storageRef;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_matching_game_no_audio);
 
-    protected void Animate(ImageView view){
+        chronometer = findViewById(R.id.Time);
+        chronometer.start();
+        score = findViewById(R.id.Score);
+        time = findViewById(R.id.Time);
+        selectedviews = new ArrayList<>();
+
+        audio1 = R.raw.gozluk;
+        audio2 = R.raw.araba;
+        audio3 = R.raw.ordek;
+        audio4 = R.raw.kalem;
+        audio5 = R.raw.telefon;
+        audio6 = R.raw.gemi;
+
+        //add audio files to an array list
+        audios = new ArrayList<>();
+        audios.add(audio1);
+        audios.add(audio2);
+        audios.add(audio3);
+        audios.add(audio4);
+        audios.add(audio5);
+        audios.add(audio6);
+        audios.add(audio1);
+        audios.add(audio2);
+        audios.add(audio3);
+        audios.add(audio4);
+        audios.add(audio5);
+        audios.add(audio6);
+
+        drw1 = R.drawable.gozluk;
+        drw2 = R.drawable.araba;
+        drw3 = R.drawable.ordek;
+        drw4 = R.drawable.kalem;
+        drw5 = R.drawable.telefon;
+        drw6 = R.drawable.gemi;
+
+        //add drawable images to an array list
+        drawables = new ArrayList<>();
+        drawables.add(drw1);
+        drawables.add(drw2);
+        drawables.add(drw3);
+        drawables.add(drw4);
+        drawables.add(drw5);
+        drawables.add(drw6);
+        drawables.add(drw1);
+        drawables.add(drw2);
+        drawables.add(drw3);
+        drawables.add(drw4);
+        drawables.add(drw5);
+        drawables.add(drw6);
+
+        //create a HashMap to match audios according to drawables
+        audioMap = new HashMap<Integer, Integer>();
+        for(int i=0; i<12; i++){
+            audioMap.put(drawables.get(i), audios.get(i));
+        }
+
+        //shuffle drawables
+        Collections.shuffle(drawables);
+
+        image1= findViewById(R.id.image1);
+        image2= findViewById(R.id.image2);
+        image3= findViewById(R.id.image3);
+        image4= findViewById(R.id.image4);
+        image5= findViewById(R.id.image5);
+        image6= findViewById(R.id.image6);
+        image7= findViewById(R.id.image7);
+        image8= findViewById(R.id.image8);
+        image9= findViewById(R.id.image9);
+        image10= findViewById(R.id.image10);
+        image11= findViewById(R.id.image11);
+        image12= findViewById(R.id.image12);
+
+        //add image views to an array list
+        images = new ArrayList<>();
+        images.add(image1);
+        images.add(image2);
+        images.add(image3);
+        images.add(image4);
+        images.add(image5);
+        images.add(image6);
+        images.add(image7);
+        images.add(image8);
+        images.add(image9);
+        images.add(image10);
+        images.add(image11);
+        images.add(image12);
+
+        for(int i=0; i<12; i++){
+            final int finalI = i;
+            //set onclick listener for each image view
+            images.get(i).setOnClickListener(new ImageView.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    clickcount++;
+                    //prevent double click
+                    v.setEnabled(false);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            changeImage(finalI);
+                        }
+                    },500);
+                }
+            });
+
+            //insert shuffled drawables into image views and add tags
+            images.get(i).setImageResource(R.drawable.lookup);
+            images.get(i).setTag(drawables.get(i));
+        }
+    }
+
+    //rotate image animation
+    protected void animate(ImageView view, int res){
+        final int resId = res;
         final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
         final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
         final ImageView View = view;
@@ -91,95 +181,80 @@ public class MatchingGame_NoAudio extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                View.setImageResource(R.drawable.lookup);
+                View.setImageResource(resId);
                 oa2.start();
             }
         });
         oa1.start();
     }
 
-    protected void compare(){
-        if(FirstImage==SecondImage)
+    //change image view's drawable resource
+    public void changeImage(int index){
+        //add clicked views to an array list
+        selectedviews.add(images.get(index));
+        animate(images.get(index),drawables.get(index));
+
+        //when second image view is clicked
+        if(clickcount == 2){
+            //make other image views non-clickable
+            for (int j=0; j<12;j++){
+                images.get(j).setEnabled(false);
+            }
+
+            //create handler to run compare function with 2 seconds delay
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //call function to compare selected views
+                    compare(selectedviews);
+                    //reset click count
+                    clickcount = 0;
+                    //reset selected views array
+                    selectedviews.clear();
+                    for (int j=0; j<12;j++){
+                        //make other image views clickable again
+                        images.get(j).setEnabled(true);
+                    }
+                }
+            },2000);
+        }
+    }
+
+    //function to compare selected views by tag
+    protected void compare(ArrayList<ImageView> selectedimages){
+        //if the tags of selected views are the same
+        if(selectedimages.get(0).getTag().equals(selectedimages.get(1).getTag()))
         {
             truecount++;
             Score+=1;
             score.setText("Skor: " + Score);
-            if(FirstView==0||SecondView==0)
-                image1.setVisibility(View.INVISIBLE);
-            if(FirstView==1||SecondView==1)
-                image2.setVisibility(View.INVISIBLE);
-            if(FirstView==2||SecondView==2)
-                image3.setVisibility(View.INVISIBLE);
-            if(FirstView==3||SecondView==3)
-                image4.setVisibility(View.INVISIBLE);
-            if(FirstView==4||SecondView==4)
-                image5.setVisibility(View.INVISIBLE);
-            if(FirstView==5||SecondView==5)
-                image6.setVisibility(View.INVISIBLE);
-            if(FirstView==6||SecondView==6)
-                image7.setVisibility(View.INVISIBLE);
-            if(FirstView==7||SecondView==7)
-                image8.setVisibility(View.INVISIBLE);
-            if(FirstView==8||SecondView==8)
-                image9.setVisibility(View.INVISIBLE);
-            if(FirstView==9||SecondView==9)
-                image10.setVisibility(View.INVISIBLE);
-            if(FirstView==10||SecondView==10)
-                image11.setVisibility(View.INVISIBLE);
-            if(FirstView==11||SecondView==11)
-                image12.setVisibility(View.INVISIBLE);
+            //make views invisible
+            selectedimages.get(0).setVisibility(View.INVISIBLE);
+            selectedimages.get(1).setVisibility(View.INVISIBLE);
         }
+        //if the tags of selected views are the different
         else
         {
             falsecount++;
-            if(FirstView==0||SecondView==0)
-                Animate(image1);
-            if(FirstView==1||SecondView==1)
-                Animate(image2);
-            if(FirstView==2||SecondView==2)
-                Animate(image3);
-            if(FirstView==3||SecondView==3)
-                Animate(image4);
-            if(FirstView==4||SecondView==4)
-                Animate(image5);
-            if(FirstView==5||SecondView==5)
-                Animate(image6);
-            if(FirstView==6||SecondView==6)
-                Animate(image7);
-            if(FirstView==7||SecondView==7)
-                Animate(image8);
-            if(FirstView==8||SecondView==8)
-                Animate(image9);
-            if(FirstView==9||SecondView==9)
-                Animate(image10);
-            if(FirstView==10||SecondView==10)
-                Animate(image11);
-            if(FirstView==11||SecondView==11)
-                Animate(image12);
+            //revert views
+            animate(selectedviews.get(0), R.drawable.lookup);
+            animate(selectedviews.get(1), R.drawable.lookup);
+            selectedviews.get(0).setEnabled(true);
+            selectedviews.get(1).setEnabled(true);
         }
-        image1.setEnabled(true);
-        image2.setEnabled(true);
-        image3.setEnabled(true);
-        image4.setEnabled(true);
-        image5.setEnabled(true);
-        image6.setEnabled(true);
-        image7.setEnabled(true);
-        image8.setEnabled(true);
-        image9.setEnabled(true);
-        image10.setEnabled(true);
-        image11.setEnabled(true);
-        image12.setEnabled(true);
 
+        //if all images are matched
         if (Score==6)
         {
             chronometer.stop();
             elapsedtime = time.getText().toString();
 
-//            String filepath = "/sdcard/MemoryPlusResults";
-
+            //open file to write new results
             File file = new File(getExternalFilesDir(null), "mgresult.txt");
 
             try {
+                //add new results
                 BufferedWriter buf = new BufferedWriter(new FileWriter(file, true));
                 buf.append("Sessiz eşleştirme:");
                 buf.newLine();
@@ -201,10 +276,12 @@ public class MatchingGame_NoAudio extends AppCompatActivity {
                 user = mAuth.getCurrentUser();
                 storageRef = FirebaseStorage.getInstance().getReference();
 
+                //get current time stamp to use as file name
                 final String timeStamp = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
                 final StorageReference fileRef = storageRef.child("Users/" + user.getUid() + "/Game Results/Matching/" + timeStamp + ".txt");
                 Uri fileuri = Uri.fromFile(file);
 
+                //upload file to firebase storage
                 fileRef.putFile(fileuri)
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
@@ -212,14 +289,10 @@ public class MatchingGame_NoAudio extends AppCompatActivity {
                                 fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
-                                        String fileurl = uri.toString();
-
                                     }
                                 });
-                                // Get a URL to the uploaded content
-                                // Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                //save file name(url) to firebase database
                                 saveFileUrlToDatabase(timeStamp);
-
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -230,320 +303,35 @@ public class MatchingGame_NoAudio extends AppCompatActivity {
                             }
                         });
 
+                //delete file from device
                 file.delete();
 
+                //create alert dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(MatchingGame_NoAudio.this);
+                builder.setTitle("Tebrikler!");
+                builder.setMessage("Oyunu tamamladınız.");
+                final AlertDialog diag = builder.create();
+                diag.show();
+                new CountDownTimer(3000, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                    }
+                    @Override
+                    public void onFinish() {
+                        //close dialog
+                        diag.dismiss();
+                        //redirect to games activity
+                        Intent gamesint = new Intent(MatchingGame_NoAudio.this, GamesActivity.class);
+                        startActivity(gamesint);
+                    }
+                }.start();
             }
-
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(MatchingGame_NoAudio.this);
-
-            builder.setTitle("Tebrikler!");
-
-            builder.setMessage("Tüm resimleri eşleştirdiniz.");
-
-            final AlertDialog diag = builder.create();
-
-            diag.show();
-
-            new CountDownTimer(3000, 1000) {
-
-                @Override
-                public void onTick(long millisUntilFinished) {
-
-                }
-
-                @Override
-                public void onFinish() {
-                    diag.dismiss();
-                    Intent gamesint = new Intent(MatchingGame_NoAudio.this, GamesActivity.class);
-                    startActivity(gamesint);
-                }
-            }.start();
-
-
         }
     }
-    protected void ChangeImage(ImageView view,int tag){
-        if(array[tag]==1)
-        {
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.araba);
-                    oa2.start();
-                }
-            });
-            oa1.start();
 
-        }
-        else if(array[tag]==2){
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.gozluk);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-
-        }
-        else if(array[tag]==3){
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.telefon);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-
-        }
-        else if(array[tag]==4){
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.ordek);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-
-        }
-        else if(array[tag]==5){
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.gemi);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-
-        }
-        else if(array[tag]==6){
-            final ObjectAnimator oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f);
-            final ObjectAnimator oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f);
-            final ImageView View = view;
-            oa1.setInterpolator(new DecelerateInterpolator());
-            oa2.setInterpolator(new AccelerateDecelerateInterpolator());
-            oa1.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    View.setImageResource(R.drawable.kalem);
-                    oa2.start();
-                }
-            });
-            oa1.start();
-
-        }
-        if(number==1)
-        {
-            FirstImage=array[tag];
-            number=2;
-            FirstView= tag;
-            if (tag ==0)
-                image1.setEnabled(false);
-            if(tag ==1)
-                image2.setEnabled(false);
-            if(tag==2)
-                image3.setEnabled(false);
-            if(tag==3)
-                image4.setEnabled(false);
-            if(tag==4)
-                image5.setEnabled(false);
-            if(tag==5)
-                image6.setEnabled(false);
-            if(tag==6)
-                image7.setEnabled(false);
-            if(tag ==7)
-                image8.setEnabled(false);
-            if(tag==8)
-                image9.setEnabled(false);
-            if(tag==9)
-                image10.setEnabled(false);
-            if(tag==10)
-                image11.setEnabled(false);
-            if(tag==11)
-                image12.setEnabled(false);
-
-        }
-        else
-        {
-            SecondView= tag;
-            SecondImage=array[tag];
-            number=1;
-            image1.setEnabled(false);
-            image2.setEnabled(false);
-            image3.setEnabled(false);
-            image4.setEnabled(false);
-            image5.setEnabled(false);
-            image6.setEnabled(false);
-            image7.setEnabled(false);
-            image8.setEnabled(false);
-            image9.setEnabled(false);
-            image10.setEnabled(false);
-            image11.setEnabled(false);
-            image12.setEnabled(false);
-
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    compare();
-                }
-            },2000);
-        }
-    }
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_matching_game_no_audio);
-
-        chronometer = findViewById(R.id.Time);
-        chronometer.start();
-
-        image1= findViewById(R.id.image1);
-        image2= findViewById(R.id.image2);
-        image3= findViewById(R.id.image3);
-        image4= findViewById(R.id.image4);
-        image5= findViewById(R.id.image5);
-        image6= findViewById(R.id.image6);
-        image7= findViewById(R.id.image7);
-        image8= findViewById(R.id.image8);
-        image9= findViewById(R.id.image9);
-        image10= findViewById(R.id.image10);
-        image11= findViewById(R.id.image11);
-        image12= findViewById(R.id.image12);
-        score = findViewById(R.id.Score);
-        time = findViewById(R.id.Time);
-        array = new Integer[]{1,2,3,4,5,6,1,2,3,4,5,6};
-        list = Arrays.asList(array);
-        Collections.shuffle(list);
-        list.toArray(array);
-
-        image1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image1,0);
-            }
-        });
-        image2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image2,1);
-            }
-        });
-        image3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image3,2);
-            }
-        });
-        image4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image4,3);
-            }
-        });
-        image5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image5,4);
-            }
-        });
-        image6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image6,5);
-            }
-        });
-        image7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image7,6);
-            }
-        });
-        image8.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image8,7);
-            }
-        });
-        image9.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image9,8);
-            }
-        });
-        image10.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image10,9);
-            }
-        });
-        image11.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image11,10);
-            }
-        });
-        image12.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                ChangeImage(image12,11);
-            }
-        });
-
-    }
-
-
+    //function to save file name(url) to firebase database
     public void saveFileUrlToDatabase(String fileurl) {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.child("GameResults").child("Matching").child(user.getUid()).child(fileurl).setValue(fileurl);
-
     }
-
 }
