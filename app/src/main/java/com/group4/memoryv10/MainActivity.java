@@ -58,13 +58,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (!task.isSuccessful()) {
-                            Log.d("", "ok");
+                            Log.d("", "subcription ok");
                         }
-                        Log.d("", "fail");
+                        Log.d("", "subcription fail");
                     }
                 });
-
-
     }
 
     public void onStart() {

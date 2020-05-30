@@ -99,25 +99,26 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object o) {
                         if(switchpref.isChecked()){
-                            FirebaseMessaging.getInstance().subscribeToTopic("memoryplusreminder")
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (!task.isSuccessful()) {
-                                                Log.d("", "ok");
-                                            }
-                                            Log.d("", "fail");
-                                        }
-                                    });
-                        }else {
                             FirebaseMessaging.getInstance().unsubscribeFromTopic("memoryplusreminder")
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (!task.isSuccessful()) {
-                                                Log.d("", "ok");
+                                                Log.d("", "unsub ok");
                                             }
-                                            Log.d("", "fail");
+                                            Log.d("", "unsub fail");
+                                        }
+                                    });
+                        }
+                        else {
+                            FirebaseMessaging.getInstance().unsubscribeFromTopic("memoryplusreminder")
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (!task.isSuccessful()) {
+                                                Log.d("", "unsub ok");
+                                            }
+                                            Log.d("", "unsub fail");
                                         }
                                     });
                         }
