@@ -252,12 +252,7 @@ public class EditMemoriesActivity extends AppCompatActivity implements EditImage
         reloadActivity();
     }
 
-    @Override
-    public void onResume()
-    {
-        //After a pause OR at startup, reload view
-        super.onResume();
-    }
+
 
     //check empty inputs
     public boolean checkFields(EditText field){

@@ -195,13 +195,7 @@ public class MemoriesActivity extends AppCompatActivity {
     public void onRestart() {
         //reload view
         super.onRestart();
-    }
-
-    @Override
-    public void onResume()
-    {
-        //After a pause OR at startup, reload view
-        super.onResume();
+        this.recreate();
     }
 
     public void setCaretakerPin(String pin){

@@ -99,7 +99,7 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object o) {
                         if(switchpref.isChecked()){
-                            FirebaseMessaging.getInstance().subscribeToTopic("reminder")
+                            FirebaseMessaging.getInstance().subscribeToTopic("memoryplusreminder")
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
@@ -110,7 +110,7 @@ public class SettingsActivity extends AppCompatActivity {
                                         }
                                     });
                         }else {
-                            FirebaseMessaging.getInstance().unsubscribeFromTopic("reminder")
+                            FirebaseMessaging.getInstance().unsubscribeFromTopic("memoryplusreminder")
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
