@@ -302,7 +302,7 @@ public class PreviousImageGame_Level2 extends AppCompatActivity {
                 if (file.exists()){
                     file.delete();
                 }
-                Intent cancelint = new Intent(PreviousImageGame_Level2.this, HomeActivity.class);
+                Intent cancelint = new Intent(PreviousImageGame_Level2.this, GamesActivity.class);
                 startActivity(cancelint);
             }
         });

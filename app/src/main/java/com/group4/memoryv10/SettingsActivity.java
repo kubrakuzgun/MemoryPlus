@@ -1,9 +1,14 @@
 package com.group4.memoryv10;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.service.notification.StatusBarNotification;
 import android.text.InputType;
 import android.util.Log;
 import android.widget.EditText;
@@ -26,6 +31,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.logging.Logger;
 
 public class SettingsActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
@@ -269,9 +276,5 @@ public class SettingsActivity extends AppCompatActivity {
             field.requestFocus();
             field.setError("Bu alan boş bırakılamaz.");
         }
-    }
-
-    public void notificationPreference(){
-
     }
 }

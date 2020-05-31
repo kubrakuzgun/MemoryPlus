@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -303,6 +304,31 @@ public class MatchingGame extends AppCompatActivity {
                 }.start();
             }
         }
+    }
+
+    //override onBackPressed function to alert user and cancel test
+    @Override
+    public void onBackPressed() {
+        //create alert to cancel test
+        AlertDialog.Builder alert = new AlertDialog.Builder(MatchingGame.this);
+        alert.setTitle("Testi iptal etmek istiyor musunuz?");
+        alert.setMessage("İlerlemeniz kaydedilmeyecek.");
+        alert.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                File file = new File(getExternalFilesDir(null), "mgresult.txt");
+                if (file.exists()){
+                    file.delete();
+                }
+                Intent cancelint = new Intent(MatchingGame.this, GamesActivity.class);
+                startActivity(cancelint);
+            }
+        });
+        alert.setNegativeButton("İptal", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.cancel();
+            }
+        });
+        alert.show();
     }
 
     private static boolean isExternalStorageReadOnly() {

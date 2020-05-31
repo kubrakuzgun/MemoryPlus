@@ -300,7 +300,7 @@ public class RepeatedImagesGame extends AppCompatActivity {
                 if (file.exists()){
                     file.delete();
                 }
-                Intent cancelint = new Intent(RepeatedImagesGame.this, HomeActivity.class);
+                Intent cancelint = new Intent(RepeatedImagesGame.this, GamesActivity.class);
                 startActivity(cancelint);
             }
         });
