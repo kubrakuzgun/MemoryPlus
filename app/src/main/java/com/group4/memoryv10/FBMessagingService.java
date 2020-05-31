@@ -14,6 +14,4 @@ public class FBMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
     }
-
-
 }

@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -162,22 +163,7 @@ public class RepeatedImagesGame extends AppCompatActivity {
         }
 
         else{
-            AlertDialog.Builder builder = new AlertDialog.Builder(RepeatedImagesGame.this);
-            builder.setTitle("Tebrikler!");
-            builder.setMessage("Oyunu tamamladınız.");
-            final AlertDialog diag = builder.create();
-            diag.show();
-            new CountDownTimer(4000, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                }
-                @Override
-                public void onFinish() {
-                    diag.dismiss();
-                    Intent gamesint = new Intent(RepeatedImagesGame.this, GamesActivity.class);
-                    startActivity(gamesint);
-                }
-            }.start();
+            saveResults();
         }
     }
 
@@ -246,6 +232,7 @@ public class RepeatedImagesGame extends AppCompatActivity {
                             fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
+                                    Log.d(" ", "file saved");
                                 }
                             });
                             //save file name(url) to firebase database
@@ -255,8 +242,7 @@ public class RepeatedImagesGame extends AppCompatActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
-                            // Handle unsuccessful uploads
-                            // ...
+                            Log.d(" ", "file not saved");
                         }
                     });
 
@@ -266,8 +252,8 @@ public class RepeatedImagesGame extends AppCompatActivity {
 
             //create alert dialog
             AlertDialog.Builder builder = new AlertDialog.Builder(RepeatedImagesGame.this);
-            builder.setTitle("Birince seviye tamamlandı!");
-            builder.setMessage("Bir sonraki seviye için hazır olun.");
+            builder.setTitle("Tebrikler!");
+            builder.setMessage("Oyunu tamamladınız.");
             final AlertDialog diag = builder.create();
             diag.show();
             new CountDownTimer(4000, 1000) {
