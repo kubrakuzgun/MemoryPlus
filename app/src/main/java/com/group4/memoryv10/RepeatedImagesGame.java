@@ -163,6 +163,8 @@ public class RepeatedImagesGame extends AppCompatActivity {
         }
 
         else{
+            chronometer.stop();
+            elapsedtime = time.getText().toString();
             saveResults();
         }
     }

@@ -89,7 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     //save user to database
                                     writeNewUser(user.getUid(), uname, usurname, 0, " ", " ", " ", " ", 0, " ", " ", 1234);
                                     createCaretakerPin();
-                                    startActivity(new Intent(RegisterActivity.this,HomeActivity.class));
+                                    displayUsageWarning();
                                 }
                             }
                         });
@@ -168,6 +168,54 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+        alert.show();
+    }
 
+    public void displayUsageWarning(){
+        //create alert dialog to display usage warning
+        android.app.AlertDialog.Builder alert = new AlertDialog.Builder(RegisterActivity.this);
+        LinearLayout ll = new LinearLayout(RegisterActivity.this);
+        alert.setTitle("Dikkat!");
+
+        TextView warning1 = new TextView(RegisterActivity.this);
+        warning1.setText("Hafıza kutusu testinin 3 haftada 1 tekrarlanması gerekmektedir.");
+
+        TextView warning1_1 = new TextView(RegisterActivity.this);
+        warning1_1.setText("Daha az ya da çok sıklıkta uygulanması kesinlikle tavsiye edilmemektedir");
+
+        TextView warning2 = new TextView(RegisterActivity.this);
+        warning2.setText("");
+
+        TextView warning4 = new TextView(RegisterActivity.this);
+        warning4.setText("");
+
+        TextView warning5 = new TextView(RegisterActivity.this);
+        warning5.setText("");
+
+        TextView warning6 = new TextView(RegisterActivity.this);
+        warning6.setText("");
+
+        TextView warning3 = new TextView(RegisterActivity.this);
+        warning3.setText("Mini Oyunların tekrarlanma sıklığı hastanın durumuna göre hasta yakını tarafından belirlenmelidir." );
+        TextView warning3_3 = new TextView(RegisterActivity.this);
+        warning3_3.setText(" Gün içerisinde aynı oyunun birden fazla oynanması tavsiye edilmemektedir");
+
+        ll.setOrientation(LinearLayout.VERTICAL);
+        ll.addView(warning2);
+        ll.addView(warning1);
+        ll.addView(warning4);
+        ll.addView(warning1_1);
+        ll.addView(warning5);
+        ll.addView(warning3);
+        ll.addView(warning6);
+        ll.addView(warning3_3);
+
+        alert.setView(ll);
+        alert.setPositiveButton("Anladım", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                startActivity(new Intent(RegisterActivity.this,HomeActivity.class));
+            }
+        });
+        alert.show();
     }
 }
