@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
@@ -89,7 +90,6 @@ public class RegisterActivity extends AppCompatActivity {
                                     //save user to database
                                     writeNewUser(user.getUid(), uname, usurname, 0, " ", " ", " ", " ", 0, " ", " ", 1234);
                                     createCaretakerPin();
-                                    displayUsageWarning();
                                 }
                             }
                         });
@@ -157,6 +157,15 @@ public class RegisterActivity extends AppCompatActivity {
                     if(pin.equals(cpin)){
                         dbRef.child("Users").child(currentuser.getUid()).child("caretakerPin").setValue(pin);
                         Toast.makeText(RegisterActivity.this, "Yönetici şifresi oluşturuldu", Toast.LENGTH_SHORT).show();
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                displayUsageWarning();
+                            }
+                        }, 2000);
+
+
                     }
                     else{
                         Toast.makeText(RegisterActivity.this, "Şifreler eşleşmiyor, lütfen tekrar deneyin..", Toast.LENGTH_SHORT).show();
