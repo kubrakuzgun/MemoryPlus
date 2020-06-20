@@ -4,14 +4,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -122,6 +128,13 @@ public class ProfileActivity extends AppCompatActivity {
                         break;
                     }
                 }
+                if(age.equals("0")){
+                    age="";
+                }
+                if(mmse.equals("0")){
+                    mmse="";
+                }
+
                 newname.setText(name);
                 newsurname.setText(surname);
                 newage.setText(age);
@@ -163,14 +176,15 @@ public class ProfileActivity extends AppCompatActivity {
                             databaseReference.child("Users").child(user.getUid()).child("mmseScore").setValue(newmmse.getText().toString());
                             databaseReference.child("Users").child(user.getUid()).child("caretaker").setValue(newcaretaker.getText().toString());
                             databaseReference.child("Users").child(user.getUid()).child("caretakerPhone").setValue(newcaretakerphone.getText().toString());
-
+                            hideKeyboard();
                             Toast.makeText(ProfileActivity.this,"Değişiklikler kaydedildi.",Toast.LENGTH_LONG).show();
                             dialog.dismiss();
-                            reloadActivity();
                         }
                         else{
                             Toast.makeText(ProfileActivity.this,"Hatalı şifre.",Toast.LENGTH_LONG).show();
                             dialog.cancel();
+                            hideKeyboard();
+                            reloadActivity();
                         }
                     }
                 });
@@ -211,7 +225,6 @@ public class ProfileActivity extends AppCompatActivity {
             picURL=data.getData();
             //set picture url
             profilePic.setImageURI(picURL);
-            //upload picture to storage
             pictureUpload();
         }
     }
@@ -229,7 +242,7 @@ public class ProfileActivity extends AppCompatActivity {
                         // Get a URL to the uploaded content
                         // Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         Toast.makeText(ProfileActivity.this,"Profil resmi başarıyla değiştirildi.",Toast.LENGTH_LONG).show();
-
+                        reloadActivity();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -255,7 +268,6 @@ public class ProfileActivity extends AppCompatActivity {
         //reload view
         super.onRestart();
         reloadActivity();
-        onBackPressed();
     }
     @Override
     public void onResume()
@@ -263,4 +275,10 @@ public class ProfileActivity extends AppCompatActivity {
         //After a pause OR at startup, reload view
         super.onResume();
     }
+
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    }
+
 }

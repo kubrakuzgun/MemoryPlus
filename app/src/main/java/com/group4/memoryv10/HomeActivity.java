@@ -46,10 +46,12 @@ public class HomeActivity extends AppCompatActivity {
         memoriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                int count = 0;
                 for (DataSnapshot datas: dataSnapshot.getChildren()) {
                     //number of memories
-                    memoryCount++;
+                    count++;
                 }
+                memoryCount = count;
             }
 
             @Override

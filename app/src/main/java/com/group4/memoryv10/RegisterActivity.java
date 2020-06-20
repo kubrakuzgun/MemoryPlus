@@ -180,6 +180,7 @@ public class RegisterActivity extends AppCompatActivity {
         alert.show();
     }
 
+    //function to display usage limit warning
     public void displayUsageWarning(){
         //create alert dialog to display usage warning
         android.app.AlertDialog.Builder alert = new AlertDialog.Builder(RegisterActivity.this);
